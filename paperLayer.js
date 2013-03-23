@@ -37,6 +37,8 @@ function drawModelWorld(){
 
   gl.bindBuffer(gl.ARRAY_BUFFER, F.vertexPositionBuffer);
   gl.vertexAttribPointer(shaderProgram.positionLocation,F.vertexPositionBuffer.itemSize,gl.FLOAT,false,0,0);
+  
+  gl.uniform4f(shaderProgram.colorLocation, 0, 1, 0, 1);
   gl.drawArrays(gl.TRIANGLES, 0, F.vertexPositionBuffer.numItems);
 }
 
@@ -99,6 +101,7 @@ function drawScene(){
   gl.bindTexture(gl.TEXTURE_2D, RTT.texture);
   gl.uniform1i(shaderProgram.samplerUniform, 0);
 
+  gl.uniform4f(shaderProgram.colorLocation, 0, 1, 0, 1);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, PlaneVertexPositionBuffer.numItems);
   
 }
@@ -109,8 +112,8 @@ function webGLStart(){
   initShaders();
   initTextureFramebuffer();
   initWorldModel();
-
   
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
 
   drawScene();

@@ -19,14 +19,13 @@ function initVariableLocations() {
   gl.enableVertexAttribArray(shaderProgram.textureLocation);
 
   shaderProgram.colorLocation=gl.getUniformLocation(shaderProgram, "uVertexColor");
-  gl.uniform4f(shaderProgram.colorLocation, 0, 1, 0, 1);
 
   shaderProgram.samplerUniform=gl.getUniformLocation(shaderProgram, "uSampler");
   gl.uniform1i(shaderProgram.samplerUniform, 0);
 
   shaderProgram.mvMatrixLocation=gl.getUniformLocation(shaderProgram, "uMVMatrix");
   shaderProgram.pMatrixLocation=gl.getUniformLocation(shaderProgram, "uPMatrix");
-  shaderProgram.useTextures=gl.getUniformLocation(shaderProgram, "uUseTextures");
+  shaderProgram.useTexturesUniform=gl.getUniformLocation(shaderProgram, "uUseTextures");
 } 
 
 function initShaders() {
