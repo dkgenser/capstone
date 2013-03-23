@@ -72,10 +72,10 @@ function initWorldModel(){
   gl.bufferData(
     gl.ARRAY_BUFFER, 
     new Float32Array([
-      250, 250, 0.813106,
-      -250, 250, 0.813107,
-      250, -250, 0.113121,
-      -250, -250, 0.113121,]), 
+      250, 250, 0,
+      -250, 250, 0,
+      250, -250, 0,
+      -250, -250, 0,]), 
     gl.STATIC_DRAW);
   PlaneVertexPositionBuffer.itemSize = 3;
   PlaneVertexPositionBuffer.numItems = 4;
