@@ -52,30 +52,6 @@ function initWorldModel(){
   gl.bindBuffer(gl.ARRAY_BUFFER,F.vertexPositionBuffer);
   gl.bufferData(
     gl.ARRAY_BUFFER,
-    /*new Float32Array([
-          // left column
-          0,   0,  0,
-          30,   0,  0,
-          0, 150,  0,
-          0, 150,  0,
-          30,   0,  0,
-          30, 150,  0,
-
-          // top rung
-          30,   0,  0,
-          100,   0,  0,
-          30,  30,  0,
-          30,  30,  0,
-          100,   0,  0,
-          100,  30,  0,
-
-          // middle rung
-          30,  60,  0,
-          67,  60,  0,
-          30,  90,  0,
-          30,  90,  0,
-          67,  60,  0,
-          67,  90,  0]), 2D = 18 items*/
     new Float32Array([0,0,0,30,0,0,0,150,0,0,150,0,30,0,0,30,150,0,30,0,0,100,0,0,30,30,0,30,30,0,100,0,0,100,30,0,30,60,0,67,60,0,30,90,0,30,90,0,67,60,0,67,90,0,0,0,30,30,0,30,0,150,30,0,150,30,30,0,30,30,150,30,30,0,30,100,0,30,30,30,30,30,30,30,100,0,30,100,30,30,30,60,30,67,60,30,30,90,30,30,90,30,67,60,30,67,90,30,0,0,0,100,0,0,100,0,30,0,0,0,100,0,30,0,0,30,100,0,0,100,30,0,100,30,30,100,0,0,100,30,30,100,0,30,30,30,0,30,30,30,100,30,30,30,30,0,100,30,30,100,30,0,30,30,0,30,30,30,30,60,30,30,30,0,30,60,30,30,60,0,30,60,0,30,60,30,67,60,30,30,60,0,67,60,30,67,60,0,67,60,0,67,60,30,67,90,30,67,60,0,67,90,30,67,90,0,30,90,0,30,90,30,67,90,30,30,90,0,67,90,30,67,90,0,30,90,0,30,90,30,30,150,30,30,90,0,30,150,30,30,150,0,0,150,0,0,150,30,30,150,30,0,150,0,30,150,30,30,150,0,0,0,0,0,0,30,0,150,30,0,0,0,0,150,30,0,150,0]),
     gl.STATIC_DRAW);
   F.vertexPositionBuffer.itemSize = 3;
@@ -96,10 +72,10 @@ function initWorldModel(){
   gl.bufferData(
     gl.ARRAY_BUFFER, 
     new Float32Array([
-        0, 0, 0,
-        500, 0, 0,
-        500, 500, 0,
-        0, 500, 0]), 
+      250, 250, 0.813106,
+      -250, 250, 0.813107,
+      250, -250, 0.113121,
+      -250, -250, 0.113121,]), 
     gl.STATIC_DRAW);
   PlaneVertexPositionBuffer.itemSize = 3;
   PlaneVertexPositionBuffer.numItems = 4;
@@ -109,10 +85,10 @@ function initWorldModel(){
   gl.bufferData(
     gl.ARRAY_BUFFER, 
     new Float32Array([
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0]), 
+      1.0, 1.0,
+      0.0, 1.0,
+      1.0, 0.0,
+      0.0, 0.0,]), 
     gl.STATIC_DRAW);
   PlaneVertexTextureCoordBuffer.itemSize = 2;
   PlaneVertexTextureCoordBuffer.numItems = 4;
@@ -120,24 +96,24 @@ function initWorldModel(){
 
 function initTextureFramebuffer() {
     //rtt = render to texture
-    rttFramebuffer = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
-    rttFramebuffer.width = framebufferWidth;
-    rttFramebuffer.height = framebufferHeight;
+    RTT.framebuffer = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer);
+    RTT.framebuffer.width = framebufferWidth;
+    RTT.framebuffer.height = framebufferHeight;
 
-    rttTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+    RTT.texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, RTT.texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
     gl.generateMipmap(gl.TEXTURE_2D);
 
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, rttFramebuffer.width, rttFramebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, RTT.framebuffer.width, RTT.framebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
     var renderbuffer = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, rttFramebuffer.width, rttFramebuffer.height);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, RTT.framebuffer.width, RTT.framebuffer.height);
 
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rttTexture, 0);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, RTT.texture, 0);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
 
     gl.bindTexture(gl.TEXTURE_2D, null);

@@ -15,10 +15,10 @@ var F = {};
 var PlaneVertexPositionBuffer;
 var PlaneVertexTextureCoordBuffer;
 
+//Render To Texture
+var RTT = {};
 var framebufferWidth = 512;
 var framebufferHeight = 512;
-var rttFramebuffer;
-var rttTexture;
 
 var boundingSphereRadius = 100;
 var eye = [0, 0, -boundingSphereRadius];
@@ -44,6 +44,7 @@ function setViewMatrices(eye, center, up){
   gl.viewport(0, 0, framebufferWidth, framebufferHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+  //TODO: also, only calculated once? set and save pMatrix
   mat4.ortho(pMatrix, -framebufferWidth/2, framebufferHeight/2, 
     -framebufferWidth/2, framebufferHeight/2, 
     0.1, 2*boundingSphereRadius);
@@ -54,8 +55,8 @@ function setViewMatrices(eye, center, up){
   setMatrixUniforms();
 }
 
-function bindViewtoTexture(texture){
-  gl.bindTexture(gl.TEXTURE_2D, texture);
+function bindViewtoTexture(){
+  gl.bindTexture(gl.TEXTURE_2D, RTT.texture);
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.bindTexture(gl.TEXTURE_2D, null);
 }
@@ -64,6 +65,7 @@ function setPlaneMatrices(){
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+  //TODO: This should really only be calculated once?
   mat4.ortho(pMatrix, -gl.viewportWidth/2, gl.viewportWidth/2, 
     -gl.viewportHeight/2, gl.viewportHeight/2, 
     0.1, 2*boundingSphereRadius);
@@ -75,16 +77,18 @@ function setPlaneMatrices(){
 }
 
 function drawScene(){
+  gl.clearColor(1.0, 1.0, 1.0, 1.0);
   //Render to Framebuffer
-  //gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
-  //drawView();
-  //bindViewtoTexture(rttTexture);
-  //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer);
+  drawView();
+  bindViewtoTexture();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
   //Draw plane layer
-	//setPlaneMatrices(eye, center, up);
+	setPlaneMatrices(eye, center, up);
 
-  /*gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffer);
   gl.vertexAttribPointer(shaderProgram.positionLocation, PlaneVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
   
   gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexTextureCoordBuffer);
@@ -92,20 +96,21 @@ function drawScene(){
 
   gl.uniform1i(shaderProgram.useTexturesUniform, true);
   gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+  gl.bindTexture(gl.TEXTURE_2D, RTT.texture);
+  gl.uniform1i(shaderProgram.samplerUniform, 0);
 
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, PlaneVertexPositionBuffer.numItems);
-  */
-  drawView();
+  
 }
 
 function webGLStart(){
   var canvas=document.getElementById("webGLcanvas");
   initGL(canvas);
   initShaders();
+  initTextureFramebuffer();
   initWorldModel();
 
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  
   gl.enable(gl.DEPTH_TEST);
 
   drawScene();
