@@ -20,8 +20,8 @@ function initVariableLocations() {
 
   shaderProgram.colorLocation=gl.getUniformLocation(shaderProgram, "uVertexColor");
 
+  //uSampler indicates what TEXTURE# to use
   shaderProgram.samplerUniform=gl.getUniformLocation(shaderProgram, "uSampler");
-  gl.uniform1i(shaderProgram.samplerUniform, 0);
 
   shaderProgram.mvMatrixLocation=gl.getUniformLocation(shaderProgram, "uMVMatrix");
   shaderProgram.pMatrixLocation=gl.getUniformLocation(shaderProgram, "uPMatrix");
@@ -66,18 +66,41 @@ function initWorldModel(){
   F.vertexTextureCoordBuffer.itemSize = 2;
   F.vertexTextureCoordBuffer.numItems = 96;
 
-  PlaneVertexPositionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffer);
+  PlaneVertexPositionBuffers = new Array();
+
+  PlaneVertexPositionBuffers[0] = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffers[0]);
   gl.bufferData(
     gl.ARRAY_BUFFER, 
     new Float32Array([
-      250, 250, 0,
-      -250, 250, 0,
-      250, -250, 0,
-      -250, -250, 0,]), 
+      //TL corner
+      255, 255, 0,
+      //TR corner
+      5, 255, 0,
+      //BL corner
+      255, 5, 0,
+      //BR corner
+      5, 5, 0,]), 
     gl.STATIC_DRAW);
-  PlaneVertexPositionBuffer.itemSize = 3;
-  PlaneVertexPositionBuffer.numItems = 4;
+  PlaneVertexPositionBuffers[0].itemSize = 3;
+  PlaneVertexPositionBuffers[0].numItems = 4;
+
+  PlaneVertexPositionBuffers[1] = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffers[1]);
+  gl.bufferData(
+    gl.ARRAY_BUFFER, 
+    new Float32Array([
+      //TL corner
+      255, -5, 0,
+      //TR corner
+      5, -5, 0,
+      //BL corner
+      255, -255, 0,
+      //BR corner
+      5, -255, 0,]), 
+    gl.STATIC_DRAW);
+  PlaneVertexPositionBuffers[1].itemSize = 3;
+  PlaneVertexPositionBuffers[1].numItems = 4;
 
   PlaneVertexTextureCoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexTextureCoordBuffer);
@@ -95,27 +118,36 @@ function initWorldModel(){
 
 function initTextureFramebuffer() {
     //rtt = render to texture
-    RTT.framebuffer = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer);
-    RTT.framebuffer.width = framebufferWidth;
-    RTT.framebuffer.height = framebufferHeight;
+    RTT.framebuffer = new Array();
+    RTT.texture = new Array();
 
-    RTT.texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, RTT.texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-    gl.generateMipmap(gl.TEXTURE_2D);
+    for (var i = 0; i < 2; i++) {
+      RTT.framebuffer[i] = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer[i]);
+      RTT.framebuffer[i].width = framebufferWidth;
+      RTT.framebuffer[i].height = framebufferHeight;
 
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, RTT.framebuffer.width, RTT.framebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-    var renderbuffer = gl.createRenderbuffer();
+      createRenderTexture(i);
+    };
+    /*var renderbuffer = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, RTT.framebuffer.width, RTT.framebuffer.height);
 
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, RTT.texture, 0);
-    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);*/
 
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindRenderbuffer(gl.RENDERBUFFER, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+}
+
+function createRenderTexture(index){
+  RTT.texture[index] = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, RTT.texture[index]);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+  gl.generateMipmap(gl.TEXTURE_2D);
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, RTT.framebuffer[index].width, RTT.framebuffer[index].height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, RTT.texture[index], 0);
 }
