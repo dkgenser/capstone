@@ -79,7 +79,7 @@ function setPlaneMatrices(){
 }
 
 function drawScene(){
-  gl.clearColor(1.0, 1.0, 1.0, 1.0);
+  gl.clearColor(0.5, 0.5, 0.5, 1.0);
   //Render to Framebuffer
   gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer);
   drawView();
@@ -101,9 +101,15 @@ function drawScene(){
   gl.bindTexture(gl.TEXTURE_2D, RTT.texture);
   gl.uniform1i(shaderProgram.samplerUniform, 0);
 
-  gl.uniform4f(shaderProgram.colorLocation, 0, 1, 0, 1);
+  gl.uniform4f(shaderProgram.colorLocation, 1.0, 1.0, 1.0, 0.5);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, PlaneVertexPositionBuffer.numItems);
   
+}
+
+function tick(){
+  requestAnimFrame(tick);
+
+  drawScene();
 }
 
 function webGLStart(){
@@ -116,5 +122,5 @@ function webGLStart(){
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
 
-  drawScene();
+  tick();
 }

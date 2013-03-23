@@ -16,7 +16,7 @@ shaderScripts['frag'] = {
     'void main(void) {',
     '  vec4 vertexColor = uVertexColor;',
     '  if(uUseTextures) {',
-    '    vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));',
+    '    vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));',
     '    vertexColor = textureColor;',
     '  }',
     '',
