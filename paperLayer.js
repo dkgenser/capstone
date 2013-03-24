@@ -11,6 +11,7 @@ function setMatrixUniforms() {
 };
 
 var F = {};
+var S = {};
 
 var PlaneVertexPositionBuffers;
 var PlaneVertexTextureCoordBuffer;
@@ -26,7 +27,7 @@ var center;
 var up;
 
 function drawFrontView(){
-  eye = [0, 0, -boundingSphereRadius];
+  eye = [0, 0, boundingSphereRadius];
   center = [0, 0, 0];
   up = [0, 1, 0];
   setViewMatrices(eye, center, up);
@@ -36,7 +37,7 @@ function drawFrontView(){
 function drawTopView(){
   eye = [0, boundingSphereRadius, 0];
   center = [0, 0, 0];
-  up = [0, 0, 1];
+  up = [0, 0, -1];
   setViewMatrices(eye, center, up);
   drawModelWorld();
 }
@@ -51,6 +52,18 @@ function drawRightView(){
 
 function drawModelWorld(){
   gl.uniform1i(shaderProgram.useTexturesUniform, false);
+  //Draw box
+  gl.bindBuffer(gl.ARRAY_BUFFER, S.vertexTextureCoordBuffer);
+  gl.vertexAttribPointer(shaderProgram.textureLocation, S.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, S.vertexPositionBuffer);
+  gl.vertexAttribPointer(shaderProgram.positionLocation,S.vertexPositionBuffer.itemSize,gl.FLOAT,false,0,0);
+  
+  gl.uniform4f(shaderProgram.colorLocation, 0, 1, 1, 1);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, S.vertexIndexBuffer);
+  gl.drawElements(gl.TRIANGLES, S.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
+  //Draw F
   gl.bindBuffer(gl.ARRAY_BUFFER, F.vertexTextureCoordBuffer);
   gl.vertexAttribPointer(shaderProgram.textureLocation, F.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
@@ -59,6 +72,7 @@ function drawModelWorld(){
   
   gl.uniform4f(shaderProgram.colorLocation, 0, 1, 0, 1);
   gl.drawArrays(gl.TRIANGLES, 0, F.vertexPositionBuffer.numItems);
+   
 }
 
 function setViewMatrices(eye, center, up){
@@ -83,7 +97,7 @@ function bindViewtoTexture(texture){
 }
 
 function setPlaneMatrices(){
-  eye = [0, 0, -boundingSphereRadius];
+  eye = [0, 0, boundingSphereRadius];
   center = [0, 0, 0];
   up = [0, 1, 0];
 
