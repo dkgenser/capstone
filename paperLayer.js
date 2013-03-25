@@ -23,29 +23,10 @@ var eye;
 var center;
 var up;
 
-function drawFrontView(){
-  eye = [0, 0, boundingSphereRadius];
-  center = [0, 0, 0];
-  up = [0, 1, 0];
-  setViewMatrices(eye, center, up);
-  drawModelWorld();
-}
+var topView = new View([0, boundingSphereRadius, 0], [0, 0, 0], [0, 0, -1]);
+var frontView = new View([0, 0, boundingSphereRadius], [0, 0, 0], [0, 1, 0]);
+var rightView = new View([boundingSphereRadius, 0, 0], [0, 0, 0], [0, 1, 0]);
 
-function drawTopView(){
-  eye = [0, boundingSphereRadius, 0];
-  center = [0, 0, 0];
-  up = [0, 0, -1];
-  setViewMatrices(eye, center, up);
-  drawModelWorld();
-}
-
-function drawRightView(){
-  eye = [boundingSphereRadius, 0, 0];
-  center = [0, 0, 0];
-  up = [0, 1, 0];
-  setViewMatrices(eye, center, up);
-  drawModelWorld();
-}
 
 function drawModelWorld(){
   gl.uniform1i(shaderProgram.useTexturesUniform, false);
@@ -116,12 +97,12 @@ function drawScene(){
   gl.clearColor(0.5, 0.5, 0.5, 1.0);
   //Render views to Framebuffer
   gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer[0]);
-  drawTopView();
+  topView.draw();
   bindViewtoTexture(RTT.texture[0]);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer[1]);
-  drawFrontView();
+  frontView.draw();
   bindViewtoTexture(RTT.texture[1]);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
