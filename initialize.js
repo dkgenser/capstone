@@ -167,10 +167,14 @@ function initWorldModel(){
   gl.bufferData(
     gl.ARRAY_BUFFER, 
     new Float32Array([
-      1.0, 1.0,
+      //TL corner
       0.0, 1.0,
-      1.0, 0.0,
-      0.0, 0.0,]), 
+      //TR corner
+      1.0, 1.0,
+      //BL corner
+      0.0, 0.0,
+      //BR corner
+      1.0, 0.0,]), 
     gl.STATIC_DRAW);
   PlaneVertexTextureCoordBuffer.itemSize = 2;
   PlaneVertexTextureCoordBuffer.numItems = 4;
