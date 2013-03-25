@@ -5,9 +5,6 @@ var shaderProgram;
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
 
-var F = {};
-var S = {};
-
 var planeWidth = 250;
 var margin = 5;
 var PlaneVertexPositionBuffer;
@@ -27,46 +24,6 @@ var topView = new View([0, boundingSphereRadius, 0], [0, 0, 0], [0, 0, -1]);
 var frontView = new View([0, 0, boundingSphereRadius], [0, 0, 0], [0, 1, 0]);
 var rightView = new View([boundingSphereRadius, 0, 0], [0, 0, 0], [0, 1, 0]);
 
-
-function drawModelWorld(){
-  gl.uniform1i(shaderProgram.useTexturesUniform, false);
-  //Draw F
-  gl.bindBuffer(gl.ARRAY_BUFFER, F.vertexTextureCoordBuffer);
-  gl.vertexAttribPointer(shaderProgram.textureLocation, F.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, F.vertexPositionBuffer);
-  gl.vertexAttribPointer(shaderProgram.positionLocation,F.vertexPositionBuffer.itemSize,gl.FLOAT,false,0,0);
-  
-  gl.uniform4f(shaderProgram.colorLocation, 0, 1, 0, 1);
-  gl.drawArrays(gl.TRIANGLES, 0, F.vertexPositionBuffer.numItems);
-
-  //Draw box
-  gl.bindBuffer(gl.ARRAY_BUFFER, S.vertexTextureCoordBuffer);
-  gl.vertexAttribPointer(shaderProgram.textureLocation, S.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, S.vertexPositionBuffer);
-  gl.vertexAttribPointer(shaderProgram.positionLocation,S.vertexPositionBuffer.itemSize,gl.FLOAT,false,0,0);
-  
-  gl.uniform4f(shaderProgram.colorLocation, 0, 1, 1, 1);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, S.vertexIndexBuffer);
-  gl.drawElements(gl.TRIANGLES, S.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0); 
-}
-
-function setViewMatrices(eye, center, up){
-  gl.viewport(0, 0, framebufferWidth, framebufferHeight);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  //TODO: also, only calculated once? set and save pMatrix
-  mat4.ortho(pMatrix, -framebufferWidth/2, framebufferHeight/2, 
-    -framebufferWidth/2, framebufferHeight/2, 
-    0.1, 2*boundingSphereRadius);
-  //mat4.perspective(pMatrix, 45, framebufferWidth / framebufferHeight, 0.1, 100.0);
-
-  mat4.identity(mvMatrix);
-  mat4.lookAt(mvMatrix, eye, center, up);
-
-  setMatrixUniforms();
-}
 
 function bindViewtoTexture(texture){
   gl.bindTexture(gl.TEXTURE_2D, texture);

@@ -2,6 +2,8 @@ function View (eye, center, up){
 	this.eye = eye;
 	this.center = center;
 	this.up = up;
+
+	//width, height
 }
 
 View.prototype.draw = function(){
@@ -18,5 +20,5 @@ View.prototype.draw = function(){
 
 	setMatrixUniforms();
 
-	drawModelWorld();
+	modelWorld.draw();
 }
