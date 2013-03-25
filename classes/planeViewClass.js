@@ -2,6 +2,7 @@
  	this.center = center;
  	this.orientation = orientation;
 
+ 	//TODO: create & use framebuffer object instead
  	this.framebufferIndex = index; 
  	this.view = View;
  }
