@@ -5,10 +5,15 @@ var shaderProgram;
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
 
+//Plane variables
 var planeWidth = 250;
 var margin = 5;
 var PlaneVertexPositionBuffer;
 var PlaneVertexTextureCoordBuffer;
+
+//Folding lines
+var FLVertexPositionBuffer;
+var FLVertexTextureCoordBuffer;
 
 //Render To Texture
 var RTT = {};
@@ -26,6 +31,7 @@ var rightView = new View([boundingSphereRadius, 0, 0], [0, 0, 0], [0, 1, 0]);
 
 var topPlane = new PlaneView([0, (planeWidth + margin)/2, 0], 0, topView, 0);
 var frontPlane = new PlaneView([0, -(planeWidth + margin)/2, 0], 0, frontView, 1);
+var TFfoldingLine = new FoldingLine(0, 0);
 
 function setPlaneMatrices(){
   eye = [0, 0, boundingSphereRadius];
@@ -57,6 +63,7 @@ function drawScene(){
 	setPlaneMatrices();
   topPlane.draw();
   frontPlane.draw();
+  TFfoldingLine.draw();
 }
 
 function tick(){

@@ -83,6 +83,29 @@ function initWorldModel(){
     gl.STATIC_DRAW);
   PlaneVertexTextureCoordBuffer.itemSize = 2;
   PlaneVertexTextureCoordBuffer.numItems = 4;
+
+  FLVertexPositionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, FLVertexPositionBuffer);
+  gl.bufferData(
+    gl.ARRAY_BUFFER, 
+    new Float32Array([
+      //left
+      -(planeWidth*0.75), 0, 0,
+      //right
+      (planeWidth*0.75), 0, 0,
+      ]), 
+    gl.STATIC_DRAW);
+  FLVertexPositionBuffer.itemSize = 3;
+  FLVertexPositionBuffer.numItems = 2;
+
+  FLVertexTextureCoordBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, FLVertexTextureCoordBuffer);
+  gl.bufferData(
+    gl.ARRAY_BUFFER, 
+    new Float32Array(4), 
+    gl.STATIC_DRAW);
+  FLVertexTextureCoordBuffer.itemSize = 2;
+  FLVertexTextureCoordBuffer.numItems = 2;
 }
 
 function initTextureFramebuffer() {
