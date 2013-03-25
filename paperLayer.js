@@ -5,15 +5,12 @@ var shaderProgram;
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
 
-function setMatrixUniforms() {
-  gl.uniformMatrix4fv(shaderProgram.pMatrixLocation, false, pMatrix);
-  gl.uniformMatrix4fv(shaderProgram.mvMatrixLocation, false, mvMatrix);
-};
-
 var F = {};
 var S = {};
 
-var PlaneVertexPositionBuffers;
+var planeWidth = 250;
+var margin = 5;
+var PlaneVertexPositionBuffer;
 var PlaneVertexTextureCoordBuffer;
 
 //Render To Texture
@@ -52,17 +49,6 @@ function drawRightView(){
 
 function drawModelWorld(){
   gl.uniform1i(shaderProgram.useTexturesUniform, false);
-  //Draw box
-  gl.bindBuffer(gl.ARRAY_BUFFER, S.vertexTextureCoordBuffer);
-  gl.vertexAttribPointer(shaderProgram.textureLocation, S.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, S.vertexPositionBuffer);
-  gl.vertexAttribPointer(shaderProgram.positionLocation,S.vertexPositionBuffer.itemSize,gl.FLOAT,false,0,0);
-  
-  gl.uniform4f(shaderProgram.colorLocation, 0, 1, 1, 1);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, S.vertexIndexBuffer);
-  gl.drawElements(gl.TRIANGLES, S.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-
   //Draw F
   gl.bindBuffer(gl.ARRAY_BUFFER, F.vertexTextureCoordBuffer);
   gl.vertexAttribPointer(shaderProgram.textureLocation, F.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -72,7 +58,17 @@ function drawModelWorld(){
   
   gl.uniform4f(shaderProgram.colorLocation, 0, 1, 0, 1);
   gl.drawArrays(gl.TRIANGLES, 0, F.vertexPositionBuffer.numItems);
-   
+
+  //Draw box
+  gl.bindBuffer(gl.ARRAY_BUFFER, S.vertexTextureCoordBuffer);
+  gl.vertexAttribPointer(shaderProgram.textureLocation, S.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, S.vertexPositionBuffer);
+  gl.vertexAttribPointer(shaderProgram.positionLocation,S.vertexPositionBuffer.itemSize,gl.FLOAT,false,0,0);
+  
+  gl.uniform4f(shaderProgram.colorLocation, 0, 1, 1, 1);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, S.vertexIndexBuffer);
+  gl.drawElements(gl.TRIANGLES, S.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0); 
 }
 
 function setViewMatrices(eye, center, up){
@@ -83,6 +79,7 @@ function setViewMatrices(eye, center, up){
   mat4.ortho(pMatrix, -framebufferWidth/2, framebufferHeight/2, 
     -framebufferWidth/2, framebufferHeight/2, 
     0.1, 2*boundingSphereRadius);
+  //mat4.perspective(pMatrix, 45, framebufferWidth / framebufferHeight, 0.1, 100.0);
 
   mat4.identity(mvMatrix);
   mat4.lookAt(mvMatrix, eye, center, up);
@@ -130,18 +127,20 @@ function drawScene(){
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   //Draw plane layer
-	setPlaneMatrices(eye, center, up);
+	setPlaneMatrices();
 
+  mat4.translate(mvMatrix, mvMatrix, [0, (planeWidth + margin)/2, 0]);
   drawPlane(0);
+
+  mat4.translate(mvMatrix, mvMatrix, [0, -(planeWidth + margin), 0]);
   drawPlane(1);
-  
 }
 
 function drawPlane(index){
   gl.uniform1i(shaderProgram.useTexturesUniform, true);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffers[index]);
-  gl.vertexAttribPointer(shaderProgram.positionLocation, PlaneVertexPositionBuffers[index].itemSize, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffer);
+  gl.vertexAttribPointer(shaderProgram.positionLocation, PlaneVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
   
   gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexTextureCoordBuffer);
   gl.vertexAttribPointer(shaderProgram.textureLocation, PlaneVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -150,7 +149,8 @@ function drawPlane(index){
   gl.bindTexture(gl.TEXTURE_2D, RTT.texture[index]);
   gl.uniform1i(shaderProgram.samplerUniform, index);
 
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, PlaneVertexPositionBuffers[index].numItems);
+  setMatrixUniforms();
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, PlaneVertexPositionBuffer.numItems);
 }
 
 function tick(){
@@ -168,6 +168,7 @@ function webGLStart(){
   
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
 
   tick();
 }

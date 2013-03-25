@@ -144,41 +144,23 @@ function initWorldModel(){
   S.vertexIndexBuffer.itemSize = 1;
   S.vertexIndexBuffer.numItems = 36;
 
-  PlaneVertexPositionBuffers = new Array();
-
-  PlaneVertexPositionBuffers[0] = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffers[0]);
+  PlaneVertexPositionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffer);
   gl.bufferData(
     gl.ARRAY_BUFFER, 
     new Float32Array([
       //TL corner
-      255, 255, 0,
+      -planeWidth/2, planeWidth/2, 0,
       //TR corner
-      5, 255, 0,
+      planeWidth/2, planeWidth/2, 0,
       //BL corner
-      255, 5, 0,
+      -planeWidth/2, -planeWidth/2, 0,
       //BR corner
-      5, 5, 0,]), 
+      planeWidth/2, -planeWidth/2, 0,
+      ]), 
     gl.STATIC_DRAW);
-  PlaneVertexPositionBuffers[0].itemSize = 3;
-  PlaneVertexPositionBuffers[0].numItems = 4;
-
-  PlaneVertexPositionBuffers[1] = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffers[1]);
-  gl.bufferData(
-    gl.ARRAY_BUFFER, 
-    new Float32Array([
-      //TL corner
-      255, -5, 0,
-      //TR corner
-      5, -5, 0,
-      //BL corner
-      255, -255, 0,
-      //BR corner
-      5, -255, 0,]), 
-    gl.STATIC_DRAW);
-  PlaneVertexPositionBuffers[1].itemSize = 3;
-  PlaneVertexPositionBuffers[1].numItems = 4;
+  PlaneVertexPositionBuffer.itemSize = 3;
+  PlaneVertexPositionBuffer.numItems = 4;
 
   PlaneVertexTextureCoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexTextureCoordBuffer);
