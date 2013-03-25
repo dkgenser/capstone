@@ -24,12 +24,8 @@ var topView = new View([0, boundingSphereRadius, 0], [0, 0, 0], [0, 0, -1]);
 var frontView = new View([0, 0, boundingSphereRadius], [0, 0, 0], [0, 1, 0]);
 var rightView = new View([boundingSphereRadius, 0, 0], [0, 0, 0], [0, 1, 0]);
 
-
-function bindViewtoTexture(texture){
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.generateMipmap(gl.TEXTURE_2D);
-  gl.bindTexture(gl.TEXTURE_2D, null);
-}
+var topPlane = new PlaneView([0, (planeWidth + margin)/2, 0], 0, topView, 0);
+var frontPlane = new PlaneView([0, -(planeWidth + margin)/2, 0], 0, frontView, 1);
 
 function setPlaneMatrices(){
   eye = [0, 0, boundingSphereRadius];
@@ -53,42 +49,14 @@ function setPlaneMatrices(){
 function drawScene(){
   gl.clearColor(0.5, 0.5, 0.5, 1.0);
   //Render views to Framebuffer
-  gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer[0]);
-  topView.draw();
-  bindViewtoTexture(RTT.texture[0]);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-  gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer[1]);
-  frontView.draw();
-  bindViewtoTexture(RTT.texture[1]);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  topPlane.renderToTexture();
+  frontPlane.renderToTexture();
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   //Draw plane layer
 	setPlaneMatrices();
-
-  mat4.translate(mvMatrix, mvMatrix, [0, (planeWidth + margin)/2, 0]);
-  drawPlane(0);
-
-  mat4.translate(mvMatrix, mvMatrix, [0, -(planeWidth + margin), 0]);
-  drawPlane(1);
-}
-
-function drawPlane(index){
-  gl.uniform1i(shaderProgram.useTexturesUniform, true);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffer);
-  gl.vertexAttribPointer(shaderProgram.positionLocation, PlaneVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-  
-  gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexTextureCoordBuffer);
-  gl.vertexAttribPointer(shaderProgram.textureLocation, PlaneVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-  
-  gl.activeTexture(gl.TEXTURE0+index);
-  gl.bindTexture(gl.TEXTURE_2D, RTT.texture[index]);
-  gl.uniform1i(shaderProgram.samplerUniform, index);
-
-  setMatrixUniforms();
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, PlaneVertexPositionBuffer.numItems);
+  topPlane.draw();
+  frontPlane.draw();
 }
 
 function tick(){
