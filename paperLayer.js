@@ -32,18 +32,12 @@ var RTT = {};
 var framebufferWidth = 512;
 var framebufferHeight = 512;
 
+//ModelWorld information
 var boundingSphereRadius = 100;
 var eye;
 var center;
 var up;
 
-var topView = new View([0, boundingSphereRadius, 0], [0, 0, 0], [0, 0, -1]);
-var frontView = new View([0, 0, boundingSphereRadius], [0, 0, 0], [0, 1, 0]);
-var rightView = new View([boundingSphereRadius, 0, 0], [0, 0, 0], [0, 1, 0]);
-
-var topPlane = new PlaneView([0, (planeWidth + margin)/2, 0], 0, topView, 0);
-var frontPlane = new PlaneView([0, -(planeWidth + margin)/2, 0], 0, frontView, 1);
-var TFfoldingLine = new FoldingLine([0, 0, 0], 0);
 
 function setPlaneMatrices(){
   eye = [0, 0, boundingSphereRadius];
@@ -67,15 +61,12 @@ function setPlaneMatrices(){
 function drawScene(){
   gl.clearColor(0.5, 0.5, 0.5, 1.0);
   //Render views to Framebuffer
-  topPlane.renderToTexture();
-  frontPlane.renderToTexture();
+  paper.renderToTextures();
 
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
   //Draw plane layer
 	setPlaneMatrices();
-  topPlane.draw();
-  frontPlane.draw();
-  TFfoldingLine.draw();
+  paper.drawToScreen();
 }
 
 function tick(){
@@ -90,6 +81,7 @@ function webGLStart(){
   initShaders();
   initTextureFramebuffer();
   initWorldModel();
+  paper.init();
   
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
