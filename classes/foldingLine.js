@@ -1,12 +1,12 @@
- function FoldingLine(distance, angle){
- 	this.distance = distance;
- 	this.angle = angle;
+ function FoldingLine(center, orientation){
+ 	this.center = center;
+ 	this.orientation = orientation;
  }
 
  FoldingLine.prototype.draw = function(){
  	mvPushMatrix();
- 	//mat4.translate(mvMatrix, mvMatrix, this.distance);
- 	//mat4.rotateZ(mvMatrix, mvMatrix, degToRad(this.angle));
+ 	mat4.translate(mvMatrix, mvMatrix, this.center);
+ 	mat4.rotateZ(mvMatrix, mvMatrix, degToRad(this.orientation));
 
  	gl.uniform1i(shaderProgram.useTexturesUniform, false);
 
@@ -17,7 +17,7 @@
  	gl.vertexAttribPointer(shaderProgram.textureLocation, FLVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
  	setMatrixUniforms();
- 	gl.uniform4f(shaderProgram.colorLocation, 1, 1, 1, 1);
+ 	gl.uniform4f(shaderProgram.colorLocation, 0, 0, 0, 1);
  	gl.drawArrays(gl.LINE_STRIP, 0, FLVertexPositionBuffer.numItems);
 
  	mvPopMatrix();

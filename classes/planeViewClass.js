@@ -41,10 +41,3 @@
 
  	mvPopMatrix();
  }
-
- /*function FoldingLine(){
- 	this.distance = distance;
- 	this.angle = angle;
-
- }*/
-

@@ -1,3 +1,15 @@
+/*var global = {
+  world: ModelWorld,
+  field: "stringField",
+
+  mvMatrix: mat4.create(),
+  pMatrix: mat4.create(),
+
+  functionName: function () {
+
+  }
+}*/
+
 var gl;
 
 var shaderProgram;
@@ -31,7 +43,7 @@ var rightView = new View([boundingSphereRadius, 0, 0], [0, 0, 0], [0, 1, 0]);
 
 var topPlane = new PlaneView([0, (planeWidth + margin)/2, 0], 0, topView, 0);
 var frontPlane = new PlaneView([0, -(planeWidth + margin)/2, 0], 0, frontView, 1);
-var TFfoldingLine = new FoldingLine(0, 0);
+var TFfoldingLine = new FoldingLine([0, 0, 0], 0);
 
 function setPlaneMatrices(){
   eye = [0, 0, boundingSphereRadius];
@@ -58,7 +70,7 @@ function drawScene(){
   topPlane.renderToTexture();
   frontPlane.renderToTexture();
 
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(1.0, 1.0, 1.0, 1.0);
   //Draw plane layer
 	setPlaneMatrices();
   topPlane.draw();
