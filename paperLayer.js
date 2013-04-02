@@ -60,18 +60,15 @@ function setPlaneMatrices(){
 
 function drawScene(){
   gl.clearColor(0.5, 0.5, 0.5, 1.0);
-  //Render views to Framebuffer
   paper.renderToTextures();
 
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
-  //Draw plane layer
 	setPlaneMatrices();
   paper.drawToScreen();
 }
 
 function tick(){
   requestAnimFrame(tick);
-
   drawScene();
 }
 
@@ -80,7 +77,7 @@ function webGLStart(){
   initGL(canvas);
   initShaders();
   initTextureFramebuffer();
-  initWorldModel();
+  modelWorld.init();
   paper.init();
   
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
