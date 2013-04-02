@@ -72,9 +72,19 @@ function tick(){
   drawScene();
 }
 
-function webGLStart(){
-  var canvas=document.getElementById("webGLcanvas");
-  initGL(canvas);
+function createCanvas(){
+      var canvas = document.createElement('canvas');
+      var div = document.getElementById('canvasDiv');
+
+      canvas.width = div.clientWidth;
+      canvas.height = div.clientHeight;
+      div.appendChild(canvas);
+
+      initGL(canvas);
+}
+
+function webGLStart() {
+  createCanvas();
   initShaders();
   initTextureFramebuffer();
   modelWorld.init();
