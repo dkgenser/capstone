@@ -34,15 +34,12 @@ var framebufferHeight = 512;
 
 //ModelWorld information
 var boundingSphereRadius = 100;
-var eye;
-var center;
-var up;
 
 
 function setPlaneMatrices(){
-  eye = [0, 0, boundingSphereRadius];
-  center = [0, 0, 0];
-  up = [0, 1, 0];
+  var eye = [0, 0, boundingSphereRadius];
+  var center = [0, 0, 0];
+  var up = [0, 1, 0];
 
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -72,21 +69,23 @@ function tick(){
   drawScene();
 }
 
+var canvas;
 function createCanvas(){
-      var canvas = document.createElement('canvas');
-      var div = document.getElementById('canvasDiv');
+  canvas = document.createElement('canvas');
+  var div = document.getElementById('canvasDiv');
 
-      canvas.width = div.clientWidth;
-      canvas.height = div.clientHeight;
-      div.appendChild(canvas);
+  canvas.width = div.clientWidth;
+  canvas.height = div.clientHeight;
+  div.appendChild(canvas);
 
-      initGL(canvas);
+  initGL(canvas);
 }
 
 function webGLStart() {
   createCanvas();
   initShaders();
   initTextureFramebuffer();
+  initInteraction();
   modelWorld.init();
   paper.init();
   
