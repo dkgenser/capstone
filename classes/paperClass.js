@@ -12,6 +12,7 @@ var paper = {
 		this.planes.push(new PlaneView([0, (planeWidth + margin)/2, 0], 0, topView, 0));
 		this.planes.push(new PlaneView([0, -(planeWidth + margin)/2, 0], 0, frontView, 1));
 		
+		//TODO: clean this up?
 		var firstLine = new FoldingLine(0, this.planes[0], this.planes[1]);
 		firstLine._center = [0,0,0];
 		this.planes[0].children.push(firstLine);
@@ -96,6 +97,6 @@ var paper = {
 	},
 
 	addView: function(){
-
+		addView.start();
 	},
 };
