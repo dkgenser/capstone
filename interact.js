@@ -61,16 +61,10 @@ var addView = {
 			if (!addView.mouseClicked) {
 			  return;
 			}
-			var planeCenter = {
-				x: foldingLine.parentPlane.center[0],
-				y: foldingLine.parentPlane.center[1]
-			};
+			
 			var coords = pixelToWorldCoords(getMouse(event, canvas));
 			
-			var angle = Math.atan2(coords.y - planeCenter.y, coords.x - planeCenter.x);
-			angle = (angle * 180 / Math.PI) % 360;
-
-			foldingLine.setOrientation(90+angle);
+			foldingLine.setCenter([coords.x, coords.y, 0]);
 		};
 	},
 

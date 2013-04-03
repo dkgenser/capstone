@@ -1,6 +1,7 @@
 var paper = {
 	planes: new Array(),
 	flines: new Array(),
+	fbIndices: new Array(),
 
 	init: function (){
 		this.initBuffers();
@@ -9,12 +10,12 @@ var paper = {
 		var frontView = new View([0, 0, boundingSphereRadius], [0, 0, 0], [0, 1, 0]);
 		var rightView = new View([boundingSphereRadius, 0, 0], [0, 0, 0], [0, 1, 0]);
 
-		this.planes.push(new PlaneView([0, (planeWidth + margin)/2, 0], 0, topView, 0));
-		this.planes.push(new PlaneView([0, -(planeWidth + margin)/2, 0], 0, frontView, 1));
+		this.planes.push(new PlaneView([0, (planeWidth + margin)/2, 0], 0, topView, this.fbIndices.pop()));
+		this.planes.push(new PlaneView([0, -(planeWidth + margin)/2, 0], 0, frontView, this.fbIndices.pop()));
 		
 		//TODO: clean this up?
-		var firstLine = new FoldingLine(0, this.planes[0], this.planes[1]);
-		firstLine._center = [0,0,0];
+		var firstLine = new FoldingLine([0,0,0], this.planes[0], this.planes[1]);
+		firstLine.orientation = 0;
 		this.planes[0].children.push(firstLine);
 		this.planes[1].parentLine = firstLine;
 		this.flines.push(firstLine);
