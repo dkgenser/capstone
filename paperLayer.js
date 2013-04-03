@@ -79,13 +79,14 @@ function createCanvas(){
   div.appendChild(canvas);
 
   initGL(canvas);
+  initInteraction();
 }
 
 function webGLStart() {
   createCanvas();
   initShaders();
   initTextureFramebuffer();
-  initInteraction();
+  
   modelWorld.init();
   paper.init();
   

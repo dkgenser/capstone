@@ -5,6 +5,16 @@
  	//TODO: create & use framebuffer object instead
  	this.framebufferIndex = index; 
  	this.view = View;
+
+ 	//Tree information
+ 	this.parentLine = null;
+ 	this.children = new Array();
+ }
+
+ PlaneView.prototype.transferDistance = function(){
+ 	if(this.parentLine == null) return (planeWidth + margin)/2;
+
+ 	return this.parentLine.distToParent();
  }
 
  PlaneView.prototype.renderToTexture = function() {

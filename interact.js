@@ -29,42 +29,48 @@ var addView = {
 
 	start: function (){
 		//TODO: select view to add to
-		var planeCenter = {x: 0, y:-(planeWidth + margin)/2};
+		var pPlane = paper.planes[1];
 
-		foldingLine = new FoldingLine([planeCenter.x+planeWidth/2, planeCenter.y, 0], 0);
+		foldingLine = new FoldingLine(0, pPlane, null);
 		paper.flines.push(foldingLine);
+
+		addView.mouseClicked=true;
 
 		//bind function
 		interact.mouseDown(this.handleMouseDown);
-		interact.mouseUp(this.handleMouseUp);
-		interact.mouseMove(this.handleMouseMove(foldingLine, planeCenter));
+		interact.mouseUp(this.handleMouseUp(foldingLine));
+		interact.mouseMove(this.handleMouseMove(foldingLine));
 	},
 
 	handleMouseDown: function(event){
 		addView.mouseClicked = !addView.mouseClicked;
 	},
 
-	handleMouseUp: function(event){
-		if(addView.mouseClicked) return;
+	handleMouseUp: function(foldingLine){
+		return function(event){
+			if(addView.mouseClicked) return;
 
-		interact.setDefault();
+			paper.planes.push(foldingLine.createChild());
+
+			interact.setDefault();
+		};
 	},
 
-	handleMouseMove: function(foldingLine, planeCenter){
+	handleMouseMove: function(foldingLine){
 		return function(event) {
 			if (!addView.mouseClicked) {
 			  return;
 			}
+			var planeCenter = {
+				x: foldingLine.parentPlane.center[0],
+				y: foldingLine.parentPlane.center[1]
+			};
+			var coords = pixelToWorldCoords(getMouse(event, canvas));
 			
-			var coords = getMouse(event, canvas);
-			coords = pixelToWorldCoords(coords);
-			
-			var aCoords = {y: coords.y - planeCenter.y, x: coords.x - planeCenter.x};
-			var angle = Math.atan2(aCoords.y, aCoords.x);
+			var angle = Math.atan2(coords.y - planeCenter.y, coords.x - planeCenter.x);
 			angle = (angle * 180 / Math.PI) % 360;
 
-			foldingLine.center = [planeCenter.x + planeWidth/2 * Math.cos(degToRad(angle)), planeCenter.y + planeWidth/2 * Math.sin(degToRad(angle)), 0];
-			foldingLine.orientation = 90+angle;
+			foldingLine.setOrientation(90+angle);
 		};
 	},
 

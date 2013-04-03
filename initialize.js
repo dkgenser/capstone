@@ -51,7 +51,7 @@ function initTextureFramebuffer() {
     RTT.framebuffer = new Array();
     RTT.texture = new Array();
 
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 3; i++) {
       RTT.framebuffer[i] = gl.createFramebuffer();
       gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer[i]);
       RTT.framebuffer[i].width = framebufferWidth;
