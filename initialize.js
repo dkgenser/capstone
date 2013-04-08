@@ -18,7 +18,8 @@ function initVariableLocations() {
   shaderProgram.textureLocation=gl.getAttribLocation(shaderProgram,"aTextureCoord");
   gl.enableVertexAttribArray(shaderProgram.textureLocation);
 
-  shaderProgram.colorLocation=gl.getUniformLocation(shaderProgram, "uVertexColor");
+  shaderProgram.colorLocation=gl.getAttribLocation(shaderProgram, "aVertexColor");
+  gl.enableVertexAttribArray(shaderProgram.colorLocation);
 
   //uSampler indicates what TEXTURE# to use
   shaderProgram.samplerUniform=gl.getUniformLocation(shaderProgram, "uSampler");
@@ -51,7 +52,8 @@ function initTextureFramebuffer() {
     RTT.framebuffer = new Array();
     RTT.texture = new Array();
 
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 6; i++) {
+      paper.fbIndices.push(i);
       RTT.framebuffer[i] = gl.createFramebuffer();
       gl.bindFramebuffer(gl.FRAMEBUFFER, RTT.framebuffer[i]);
       RTT.framebuffer[i].width = framebufferWidth;

@@ -28,12 +28,14 @@
 
  	gl.bindBuffer(gl.ARRAY_BUFFER, FLVertexPositionBuffer);
  	gl.vertexAttribPointer(shaderProgram.positionLocation, FLVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+ 	gl.bindBuffer(gl.ARRAY_BUFFER, FLVertexColorBuffer);
+ 	gl.vertexAttribPointer(shaderProgram.colorLocation, FLVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
  	
  	gl.bindBuffer(gl.ARRAY_BUFFER, FLVertexTextureCoordBuffer);
  	gl.vertexAttribPointer(shaderProgram.textureLocation, FLVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
  	setMatrixUniforms();
- 	gl.uniform4f(shaderProgram.colorLocation, 0, 0, 0, 1);
  	gl.drawArrays(gl.LINE_STRIP, 0, FLVertexPositionBuffer.numItems);
 
  	mvPopMatrix();
@@ -45,16 +47,15 @@
 
  FoldingLine.prototype.createChild = function(){
  	if(this.child != null) return;
+ 
+  	var transDist = this.parentPlane.transferDistance();
 
- 	var transDist = this.parentPlane.transferDistance();
-
- 	var newCenter = [this.center[0] + transDist * Math.cos(degToRad(this.orientation-90)),
- 	 this.center[1] + transDist * Math.sin(degToRad(this.orientation-90)), 0];
-
-
+	var newCenter = [this.center[0] + transDist * Math.cos(degToRad(this.orientation-90)),
+  	 this.center[1] + transDist * Math.sin(degToRad(this.orientation-90)), 0];
+ 
  	//all fake numbers except the center
  	var newChild = new PlaneView(newCenter, 0, this.parentPlane.view, paper.fbIndices.pop());
  	this.childPlane = newChild;
 
  	return newChild;
- }
+}

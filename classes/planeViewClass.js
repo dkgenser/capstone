@@ -38,6 +38,9 @@
 
  	gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffer);
  	gl.vertexAttribPointer(shaderProgram.positionLocation, PlaneVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+ 	gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexColorBuffer);
+ 	gl.vertexAttribPointer(shaderProgram.colorLocation, PlaneVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
  	
  	gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexTextureCoordBuffer);
  	gl.vertexAttribPointer(shaderProgram.textureLocation, PlaneVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);

@@ -15,7 +15,6 @@ var paper = {
 		
 		//TODO: clean this up?
 		var firstLine = new FoldingLine([0,0,0], this.planes[0], this.planes[1]);
-		firstLine.orientation = 0;
 		this.planes[0].children.push(firstLine);
 		this.planes[1].parentLine = firstLine;
 		this.flines.push(firstLine);
@@ -39,6 +38,12 @@ var paper = {
 		  gl.STATIC_DRAW);
 		PlaneVertexPositionBuffer.itemSize = 3;
 		PlaneVertexPositionBuffer.numItems = 4;
+
+		PlaneVertexColorBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexColorBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(16), gl.STATIC_DRAW);
+		PlaneVertexColorBuffer.itemSize = 4;
+		PlaneVertexColorBuffer.numItems = 4;
 
 		PlaneVertexTextureCoordBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexTextureCoordBuffer);
@@ -70,6 +75,15 @@ var paper = {
 		  gl.STATIC_DRAW);
 		FLVertexPositionBuffer.itemSize = 3;
 		FLVertexPositionBuffer.numItems = 2;
+
+		FLVertexColorBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, FLVertexColorBuffer);
+		var colors = [
+			0,0,0,1,
+			0,0,0,1];
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+		FLVertexColorBuffer.itemSize = 4;
+		FLVertexColorBuffer.numItems = 2;
 
 		FLVertexTextureCoordBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, FLVertexTextureCoordBuffer);

@@ -11,7 +11,9 @@ var modelWorld = {
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.F.vertexPositionBuffer);
 		gl.vertexAttribPointer(shaderProgram.positionLocation,this.F.vertexPositionBuffer.itemSize,gl.FLOAT,false,0,0);
 		
-		gl.uniform4f(shaderProgram.colorLocation, 0, 1, 0, 1);
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.F.vertexColorBuffer);
+		gl.vertexAttribPointer(shaderProgram.colorLocation,this.F.vertexColorBuffer.itemSize,gl.FLOAT,false,0,0);
+
 		gl.drawArrays(gl.TRIANGLES, 0, this.F.vertexPositionBuffer.numItems);
 
 		//Draw box
@@ -20,8 +22,10 @@ var modelWorld = {
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.S.vertexPositionBuffer);
 		gl.vertexAttribPointer(shaderProgram.positionLocation,this.S.vertexPositionBuffer.itemSize,gl.FLOAT,false,0,0);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.S.vertexColorBuffer);
+		gl.vertexAttribPointer(shaderProgram.colorLocation,this.S.vertexColorBuffer.itemSize,gl.FLOAT,false,0,0);
 		
-		gl.uniform4f(shaderProgram.colorLocation, 0, 1, 1, 1);
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.S.vertexIndexBuffer);
 		gl.drawElements(gl.TRIANGLES, this.S.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 	},
@@ -45,6 +49,12 @@ var modelWorld = {
 		  gl.STATIC_DRAW);
 		this.F.vertexPositionBuffer.itemSize = 3;
 		this.F.vertexPositionBuffer.numItems = 96;
+
+		this.F.vertexColorBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.F.vertexColorBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(384), gl.STATIC_DRAW);
+		this.F.vertexColorBuffer.itemSize = 4;
+		this.F.vertexColorBuffer.numItems = 96;
 
 		this.F.vertexTextureCoordBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.F.vertexTextureCoordBuffer);
@@ -100,6 +110,27 @@ var modelWorld = {
 		  gl.STATIC_DRAW);
 		this.S.vertexPositionBuffer.itemSize = 3;
 		this.S.vertexPositionBuffer.numItems = 24;
+
+		this.S.vertexColorBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.S.vertexColorBuffer);
+		colors = [
+		    [1.0, 0.0, 0.0, 1.0],     // Front face
+		    [1.0, 1.0, 0.0, 1.0],     // Back face
+		    [0.0, 1.0, 0.0, 1.0],     // Top face
+		    [1.0, 0.5, 0.5, 1.0],     // Bottom face
+		    [1.0, 0.0, 1.0, 1.0],     // Right face
+		    [0.0, 0.0, 1.0, 1.0],     // Left face
+		]
+		var unpackedColors = [];
+		for (var i in colors) {
+		    var color = colors[i];
+		    for (var j=0; j < 4; j++) {
+		        unpackedColors = unpackedColors.concat(color);
+		    }
+		}
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
+		this.S.vertexColorBuffer.itemSize = 4;
+		this.S.vertexColorBuffer.numItems = 24;
 
 		this.S.vertexTextureCoordBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.S.vertexTextureCoordBuffer);
