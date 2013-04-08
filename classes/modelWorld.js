@@ -1,6 +1,7 @@
 var modelWorld = {
 	F: {},
 	S: {},
+	rCube: 0,
 	
 	draw: function(){
 		gl.uniform1i(shaderProgram.useTexturesUniform, false);
@@ -17,6 +18,9 @@ var modelWorld = {
 		gl.drawArrays(gl.TRIANGLES, 0, this.F.vertexPositionBuffer.numItems);
 
 		//Draw box
+		mvPushMatrix();
+		mat4.rotate(mvMatrix, mvMatrix, degToRad(this.rCube), [1, 1, 1]);
+
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.S.vertexTextureCoordBuffer);
 		gl.vertexAttribPointer(shaderProgram.textureLocation, this.S.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
@@ -27,7 +31,10 @@ var modelWorld = {
 		gl.vertexAttribPointer(shaderProgram.colorLocation,this.S.vertexColorBuffer.itemSize,gl.FLOAT,false,0,0);
 		
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.S.vertexIndexBuffer);
+		setMatrixUniforms();
 		gl.drawElements(gl.TRIANGLES, this.S.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
+		mvPopMatrix();
 	},
 
 	init: function(){
