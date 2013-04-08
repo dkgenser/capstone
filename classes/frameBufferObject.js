@@ -4,23 +4,23 @@ function FrameBufferObject(width, height, activeTexture){
 
 	this.activeTexture = activeTexture;
 
-	this.initFrameBuffer();
-	this.initTextureBuffer();
-	this.initRenderBuffer();
+	this._initFrameBuffer();
+	this._initTextureBuffer();
+	this._initRenderBuffer();
 
 	gl.bindTexture(gl.TEXTURE_2D, null);
 	gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 }
 
-FrameBufferObject.prototype.initFrameBuffer = function(){
+FrameBufferObject.prototype._initFrameBuffer = function(){
 	this.framebuffer = gl.createFramebuffer();
 	gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
 	this.framebuffer.width = this.width;
 	this.framebuffer.height = this.height;
 }
 
-FrameBufferObject.prototype.initTextureBuffer = function(){
+FrameBufferObject.prototype._initTextureBuffer = function(){
 	this.texturebuffer = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, this.texturebuffer);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -31,7 +31,7 @@ FrameBufferObject.prototype.initTextureBuffer = function(){
 	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texturebuffer, 0);
 }
 
-FrameBufferObject.prototype.initRenderBuffer = function(){
+FrameBufferObject.prototype._initRenderBuffer = function(){
 	this.renderbuffer = gl.createRenderbuffer();
 	gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderbuffer);
 	gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.width, this.height);
