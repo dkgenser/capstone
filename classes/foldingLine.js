@@ -61,7 +61,7 @@
 
  	//all fake numbers except the center (and maybe orientation)
  	var newChild = new PlaneView(childPlaneCenter, childPlaneOrientation,
- 	 	childPlaneView, paper.fbIndices.pop());
+ 	 	childPlaneView, RTT.fbos.pop());
  	newChild.parentLine = this;
  	this.childPlane = newChild;
 

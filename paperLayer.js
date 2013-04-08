@@ -98,7 +98,7 @@ function animate() {
 function webGLStart() {
   createCanvas();
   initShaders();
-  initTextureFramebuffer();
+  initFBOs();
   
   modelWorld.init();
   paper.init();
