@@ -68,7 +68,7 @@ function tick(){
   requestAnimFrame(tick);
 
   drawScene();
-  animate();
+  //animate();
 }
 
 var canvas;

@@ -51,6 +51,7 @@ function initTextureFramebuffer() {
     //rtt = render to texture
     RTT.framebuffer = new Array();
     RTT.texture = new Array();
+    RTT.renderbuffer = new Array();
 
     for (var i = 0; i < 6; i++) {
       paper.fbIndices.push(i);
@@ -61,11 +62,6 @@ function initTextureFramebuffer() {
 
       createRenderTexture(i);
     };
-    /*var renderbuffer = gl.createRenderbuffer();
-    gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, RTT.framebuffer.width, RTT.framebuffer.height);
-
-    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);*/
 
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindRenderbuffer(gl.RENDERBUFFER, null);
@@ -81,5 +77,10 @@ function createRenderTexture(index){
 
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, RTT.framebuffer[index].width, RTT.framebuffer[index].height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
+  RTT.renderbuffer[index] = gl.createRenderbuffer();
+  gl.bindRenderbuffer(gl.RENDERBUFFER, RTT.renderbuffer[index]);
+  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, RTT.framebuffer[index].width, RTT.framebuffer[index].height);
+
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, RTT.texture[index], 0);
+  gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, RTT.renderbuffer[index]);
 }
