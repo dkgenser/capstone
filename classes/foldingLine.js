@@ -57,9 +57,8 @@
  	var childPlaneView = this.createChildView();
 
  	//the new plane's rotation
- 	var childPlaneOrientation = 0;//this.orientation - 90
+ 	var childPlaneOrientation = (this.orientation +180) % 360;
 
- 	//all fake numbers except the center (and maybe orientation)
  	var newChild = new PlaneView(childPlaneCenter, childPlaneOrientation,
  	 	childPlaneView, RTT.fbos.pop());
  	newChild.parentLine = this;
@@ -70,34 +69,36 @@
 
  FoldingLine.prototype.createChildView = function(){
  	var parentView = this.parentPlane.view;
- 	//return parentView;
- 	var newView = { eye: vec3.create(), center: vec3.create(), up: vec3.create() };
+ 	var childView = {
+ 		eye: vec3.clone(parentView.eye),
+ 	 	center: vec3.clone(parentView.center),
+ 	 	up: vec3.clone(parentView.up)
+ 	};
 
- 	// var rotationAxis = foldingline at center = [0, 1, 0] rotated by this.orientation
- 	var rotationAxis = [parentView.center[0] + Math.cos(degToRad(this.orientation)),
- 		parentView.center[0] + Math.sin(degToRad(this.orientation)), 0];
- 	var viewRotate = quat.create();
- 	quat.setAxisAngle(viewRotate, rotationAxis, degToRad(90)); //TODO: might be -90?
-
- 	// newUp = (parentView.up rotated [this.orientation - 90 - this.parentPlane.orientation] around [parentView.eye - parentView.center])
- 	var upAxis = parentView.eye - parentView.center;
- 	var upDegree = this.orientation - 90 - this.parentPlane.orientation;
- 	var upRotate = quat.create();
- 	quat.setAxisAngle(upRotate, upAxis, degToRad(upDegree));
-
- 	//vec3.transformQuat(newView.up, parentView.up, upRotate);
- 	// newUp = newUp rotated 90 degrees around rotationAxis
- 	//vec3.transformQuat(newView.up, newView.up, viewRotate);
- 	newView.up = parentView.up;
+ 	var lineOfSight = vec3.create();
+ 	vec3.subtract(lineOfSight, parentView.eye, parentView.center);
+ 	vec3.normalize(lineOfSight, lineOfSight); 
  	
- 	// newEye = parentView.eye rotated 90 degrees around rotationAxis
- 	vec3.transformQuat(newView.eye, parentView.eye, viewRotate);
- 	//newView.eye = parentView.eye;
+ 	var rotationAxis = vec3.create();
+ 	var createRA = quat.create();
+ 	quat.setAxisAngle(createRA, lineOfSight, degToRad(this.orientation+90-this.parentPlane.orientation));
+ 	vec3.transformQuat(rotationAxis, parentView.up, createRA);
+ 	var rotateView = quat.create();
+ 	quat.setAxisAngle(rotateView, rotationAxis, degToRad(-90));
 
- 	// newCenter = parentView.center;
- 	newView.center = parentView.center;
-
- 	return new View(newView.eye, newView.center, newView.up);
+ 	//new eye
+ 	vec3.transformQuat(childView.eye, childView.eye, rotateView);
+ 	
+ 	//new up, first rotation
+ 	var turnView = quat.create();
+ 	quat.setAxisAngle(turnView, lineOfSight, degToRad(this.orientation+180-this.parentPlane.orientation));
+ 	vec3.transformQuat(childView.up, childView.up, turnView);
+ 	vec3.normalize(childView.up, childView.up);
+ 	
+ 	vec3.transformQuat(childView.up, childView.up, rotateView);
+ 	vec3.normalize(childView.up, childView.up);
+ 	
+ 	return new View(childView.eye, childView.center, childView.up);
  }
 
   	
