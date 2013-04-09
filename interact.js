@@ -29,7 +29,7 @@ var addView = {
 
 	start: function (){
 		//TODO: select view to add to
-		var pPlane = paper.planes[1];
+		var pPlane = paper.planes[paper.planes.length-1];
 
 		foldingLine = new FoldingLine(0, pPlane, null);
 		paper.flines.push(foldingLine);
