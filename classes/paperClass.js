@@ -61,6 +61,37 @@ var paper = {
 		PlaneVertexTextureCoordBuffer.itemSize = 2;
 		PlaneVertexTextureCoordBuffer.numItems = 4;
 
+		PlaneCircleVertexPositionBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, PlaneCircleVertexPositionBuffer);
+		var vertices = [];
+		var step = 5;
+		var numCircleVertices = 0;
+		for(var angle = 0; angle<=360; angle+=step){
+			vertices = vertices.concat([planeWidth/2 * Math.cos(degToRad(angle)),
+		 	 planeWidth/2 * Math.sin(degToRad(angle)), 0]);
+			numCircleVertices +=1;
+		}
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices),gl.STATIC_DRAW);
+		PlaneCircleVertexPositionBuffer.itemSize = 3;
+		PlaneCircleVertexPositionBuffer.numItems = numCircleVertices;
+
+		PlaneCircleVertexColorBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, PlaneCircleVertexColorBuffer);
+		var color = [1,1,0,1];
+		var colors = [];
+		for(var i = 0; i<=numCircleVertices; i++){
+			colors = colors.concat(color);
+		}
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+		PlaneCircleVertexColorBuffer.itemSize = 4;
+		PlaneCircleVertexColorBuffer.numItems = numCircleVertices;
+
+		PlaneCircleVertexTextureCoordBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, PlaneCircleVertexTextureCoordBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(2*numCircleVertices),gl.STATIC_DRAW);
+		PlaneCircleVertexTextureCoordBuffer.itemSize = 2;
+		PlaneCircleVertexTextureCoordBuffer.numItems = numCircleVertices;
+
 		FLVertexPositionBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, FLVertexPositionBuffer);
 		gl.bufferData(
@@ -77,9 +108,11 @@ var paper = {
 
 		FLVertexColorBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, FLVertexColorBuffer);
-		var colors = [
-			0,0,0,1,
-			0,0,0,1];
+		color = [0,0,0,1];
+		colors = [];
+		for(var i = 0; i<2; i++){
+			colors = colors.concat(color);
+		}
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 		FLVertexColorBuffer.itemSize = 4;
 		FLVertexColorBuffer.numItems = 2;
@@ -112,5 +145,9 @@ var paper = {
 
 	addView: function(){
 		addView.start();
+	},
+
+	selectPlane: function(){
+		selection.planeView();
 	},
 };

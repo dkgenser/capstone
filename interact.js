@@ -1,4 +1,5 @@
 var interact = {
+	mouseClicked: false,
 
 	mouseDown: function(handler){
 		$(canvas).mousedown(handler);
@@ -21,6 +22,7 @@ var interact = {
 		$(canvas).unbind('dblclick');
 		$(document).unbind('mouseup');
 		$(document).unbind('mousemove');
+		interact.mouseClicked = false;
 	},
 };
 
@@ -35,6 +37,7 @@ var addView = {
 		paper.flines.push(foldingLine);
 
 		addView.mouseClicked=true;
+		interact.setDefault();
 
 		//bind function
 		interact.mouseDown(this.handleMouseDown);
@@ -69,6 +72,35 @@ var addView = {
 	},
 
 };
+
+var selection = {
+
+	planeView: function (){
+		interact.setDefault();
+		//bind functions
+		interact.mouseDown(this.handleMouseDown);
+		interact.mouseUp(this.handleMouseUp);
+	},
+
+	handleMouseDown: function(event){
+		interact.mouseClicked = true;
+	},
+
+	handleMouseUp: function(event){
+		if(!interact.mouseClicked) return;
+
+		var coords = pixelToWorldCoords(getMouse(event, canvas));
+		var screenCoords = [coords.x, coords.y];
+
+		paper.planes.forEach(function(plane){
+			if(plane.intersects(screenCoords)){
+				plane.selected = !plane.selected;
+			}
+		});
+
+		interact.setDefault();
+	},
+}
 
 
 
