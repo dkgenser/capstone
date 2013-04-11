@@ -54,8 +54,9 @@
  	 this.center[1] + transDist * Math.sin(degToRad(this.orientation-90)), 0];
 
  	//the view (camera)
- 	var childPlaneView = this.createChildView();
-
+ 	var childView = this.createChildView();
+ 	var childPlaneView = new View(childView.eye, childView.center, childView.up);
+ 	
  	//the new plane's rotation
  	var childPlaneOrientation = (this.orientation +180) % 360;
 
@@ -98,7 +99,7 @@
  	vec3.transformQuat(childView.up, childView.up, rotateView);
  	vec3.normalize(childView.up, childView.up);
  	
- 	return new View(childView.eye, childView.center, childView.up);
+ 	return childView;
  }
 
   	
