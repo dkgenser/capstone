@@ -2,7 +2,7 @@ define([
 ], function() {
     'use strict';
 
-    var shaderScripts = {
+    var scripts = {
         frag: {
             type: 'x-shader/x-fragment',
             source: [
@@ -24,7 +24,7 @@ define([
                 '',
                 '  gl_FragColor = vertexColor;',
                 '}'
-            ].join('\n')
+            ].join( '\n' )
         },
         vert: {
             type: 'x-shader/x-vertex',
@@ -44,31 +44,31 @@ define([
                 '  vTextureCoord = aTextureCoord;',
                 '  vVertexColor = aVertexColor;',
                 '}'
-            ].join('\n')
+            ].join( '\n' )
         }
     };
 
     return {
-        getShader: function(gl, name) {
-            if (!shaderScripts[name]) {
+        get: function( gl, name ) {
+            if ( !scripts[ name ] ) {
                 return null;
             }
 
             var shader;
-            if(shaderScripts[name].type === 'x-shader/x-fragment') {
-                shader = gl.createShader(gl.FRAGMENT_SHADER);
-            } else if (shaderScripts[name].type === 'x-shader/x-vertex') {
-                shader = gl.createShader(gl.VERTEX_SHADER);
+            if ( scripts[ name ].type === 'x-shader/x-fragment' ) {
+                shader = gl.createShader( gl.FRAGMENT_SHADER );
+            } else if ( scripts[ name ].type === 'x-shader/x-vertex' ) {
+                shader = gl.createShader( gl.VERTEX_SHADER );
             } else {
                 return null;
             }
 
-            gl.shaderSource(shader, shaderScripts[name].source);
-            gl.compileShader(shader);
+            gl.shaderSource( shader, scripts[ name ].source );
+            gl.compileShader( shader );
 
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                alert('An error occured compiling the shaders: ' + gl.getShaderInfoLog(shader));
-                return null;
+            if ( !gl.getShaderParameter( shader, gl.COMPILE_STATUS ) ) {
+                alert( 'An error occured compiling the shaders: ' +
+                       gl.getShaderInfoLog( shader ) );
             }
 
             return shader;

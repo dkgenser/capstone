@@ -1,0 +1,148 @@
+define([
+    'utilities',
+    'BufferSet',
+    'PlaneView',
+    'FoldingLine'
+
+], function( utilities, BufferSet, PlaneView, FoldingLine ) {
+    'use strict';
+
+    // TODO: make these configurable from main.js
+    var PLANE_WIDTH = 250;
+    var MARGIN = 5;
+
+    var repeat = function( n, array ) {
+        var xs = [];
+        for ( var i = 0; i < n; i++ ) {
+            xs = xs.concat( array );
+        }
+        return xs;
+    };
+
+    var circularVertices = function( options ) {
+        var step = 360 / options.n;
+        var vertices = [];
+        for ( var angle = 0; angle <= 360; angle += step ) {
+            var radius = PLANE_WIDTH / 2;
+            var radians = utilities.radians( angle );
+            vertices.push( radius * Math.cos( radians ) );
+            vertices.push( radius * Math.sin( radians ) );
+            vertices.push( 0 );
+        }
+        return vertices;
+    };
+
+    var PLANE_VERTEX_POSITIONS = new Float32Array([
+        -PLANE_WIDTH/2, PLANE_WIDTH/2, 0,       // Top-left corner
+        PLANE_WIDTH/2, PLANE_WIDTH/2, 0,        // Top-right corner
+        -PLANE_WIDTH/2, -PLANE_WIDTH/2, 0,      // Bottom-left corner
+        PLANE_WIDTH/2, -PLANE_WIDTH/2, 0,       // Bottom-right corner
+    ]);
+    var PLANE_VERTEX_COLORS = new Float32Array( 16 );
+    var PLANE_VERTEX_TEXTURE_COORDS = new Float32Array([
+        0.0, 1.0,                               // Top-left corner
+        1.0, 1.0,                               // Top-right corner
+        0.0, 0.0,                               // Bottom-left corner
+        1.0, 0.0                                // Bottom-right corner
+    ]);
+
+    var PLANE_CIRCLE_SIZE = 72;
+    var PLANE_CIRCLE_POSITIONS =
+        new Float32Array( circularVertices({ n: PLANE_CIRCLE_SIZE }) );
+    var PLANE_CIRCLE_COLORS =
+        new Float32Array( repeat( PLANE_CIRCLE_SIZE, [ 1, 1, 0, 1 ] ) );
+    var PLANE_CIRCLE_TEXTURE_COORDS =
+        new Float32Array( 2 * PLANE_CIRCLE_SIZE );
+
+    var FOLDING_LINE_SIZE = 2;
+    var FOLDING_LINE_POSITIONS = new Float32Array([
+        -(PLANE_WIDTH * 0.75), 0, 0,            // Left
+        (PLANE_WIDTH * 0.75), 0, 0,             // Right
+    ]);
+    var FOLDING_LINE_COLORS =
+        new Float32Array( repeat( FOLDING_LINE_SIZE, [ 0, 0, 0, 1 ] ) );
+    var FOLDING_LINE_TEXTURE_COORDS =
+        new Float32Array( FOLDING_LINE_SIZE * 2 );
+
+
+    var Paper = function( options ) {
+        this.world = options.world;
+
+        // TODO: allow callers to control the data going in
+
+        this.planeVertex = new BufferSet( { gl: this.world.gl }, {
+            positions:      PLANE_VERTEX_POSITIONS,
+            colors:         PLANE_VERTEX_COLORS,
+            textureCoords:  PLANE_VERTEX_TEXTURE_COORDS
+        });
+
+        this.planeCircle = new BufferSet( { gl: this.world.gl }, {
+            positions:      PLANE_CIRCLE_POSITIONS,
+            colors:         PLANE_CIRCLE_COLORS,
+            textureCoords:  PLANE_CIRCLE_TEXTURE_COORDS
+        });
+
+        this.foldingLine = new BufferSet( { gl: this.world.gl }, {
+            positions:      FOLDING_LINE_POSITIONS,
+            colors:         FOLDING_LINE_COLORS,
+            textureCoords:  FOLDING_LINE_TEXTURE_COORDS
+        });
+
+        this.planes = [
+            // Top view
+            new PlaneView({
+                center: [ 0, (PLANE_WIDTH + MARGIN) / 2, 0 ],
+                orientation: 0,
+                view: {
+                    eye: [ 0, this.world.boundingSphereRadius, 0 ],
+                    center: [ 0, 0, 0 ],
+                    up: [ 0, 0, -1 ]
+                },
+                framebuffer: this.world.framebuffers.pop()
+            }),
+            // Front view
+            new PlaneView({
+                center: [ 0, -(PLANE_WIDTH + MARGIN) / 2, 0 ],
+                orientation: 0,
+                view: {
+                    eye: [ 0, 0, this.world.boundingSphereRadius ],
+                    center: [ 0, 0, 0 ],
+                    up: [ 0, 1, 0 ]
+                },
+                framebuffer: this.world.framebuffers.pop()
+            })
+        ];
+
+        this.foldingLines = [];
+
+        this.linkPlanes({
+            parent: this.planes[0],
+            child: this.planes[1],
+            center: [ 0, 0, 0 ]
+        });
+    };
+
+    Paper.prototype.linkPlanes = function( options ) {
+        var fl = new FoldingLine( options );
+        options.parent.children.push( fl );
+        options.child.parentLine = fl;
+        this.foldingLines.push( fl );
+    };
+
+    Paper.prototype.render = function() {
+        this.planes.forEach(function( plane ) {
+            plane.renderToTexture();
+        });
+    };
+
+    Paper.prototype.draw = function() {
+        this.planes.forEach(function( plane ) {
+            this.world.drawPlane( plane );
+        }.bind( this ));
+        this.foldingLines.forEach(function( foldingLine ) {
+            this.world.drawFoldingLine( foldingLine );
+        }.bind( this ));
+    };
+
+    return Paper;
+});
