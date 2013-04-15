@@ -75,7 +75,6 @@ var addView = {
 var selection = {
 
 	planeView: function (callback){
-		alert(callback);
 		interact.setDefault();
 		//bind functions
 		interact.mouseDown(this.handleMouseDown);
