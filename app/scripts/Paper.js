@@ -1,19 +1,21 @@
-define([
-    'utilities',
-    'BufferSet',
-    'PlaneView',
-    'FoldingLine'
+define(function( require ) {
+    // JSHint is right to complain: the data generation in this module
+    // should be put elsewhere.
 
-], function( utilities, BufferSet, PlaneView, FoldingLine ) {
     'use strict';
+
+    var utilities = require( 'utilities' ),
+        BufferSet = require( 'BufferSet' ),
+        PlaneView = require( 'PlaneView' ),
+        FoldingLine = require( 'FoldingLine' );
 
     // TODO: make these configurable from main.js
     var PLANE_WIDTH = 250;
     var MARGIN = 5;
 
-    var repeat = function( n, array ) {
+    var repeatArray = function( n, array ) {
         var xs = [];
-        for ( var i = 0; i < n; i++ ) {
+        for ( var i = 0; i < n; i += 1 ) {
             xs = xs.concat( array );
         }
         return xs;
@@ -50,7 +52,7 @@ define([
     var PLANE_CIRCLE_POSITIONS =
         new Float32Array( circularVertices({ n: PLANE_CIRCLE_SIZE }) );
     var PLANE_CIRCLE_COLORS =
-        new Float32Array( repeat( PLANE_CIRCLE_SIZE, [ 1, 1, 0, 1 ] ) );
+        new Float32Array( repeatArray( PLANE_CIRCLE_SIZE, [ 1, 1, 0, 1 ] ) );
     var PLANE_CIRCLE_TEXTURE_COORDS =
         new Float32Array( 2 * PLANE_CIRCLE_SIZE );
 
@@ -60,7 +62,7 @@ define([
         (PLANE_WIDTH * 0.75), 0, 0,             // Right
     ]);
     var FOLDING_LINE_COLORS =
-        new Float32Array( repeat( FOLDING_LINE_SIZE, [ 0, 0, 0, 1 ] ) );
+        new Float32Array( repeatArray( FOLDING_LINE_SIZE, [ 0, 0, 0, 1 ] ) );
     var FOLDING_LINE_TEXTURE_COORDS =
         new Float32Array( FOLDING_LINE_SIZE * 2 );
 
@@ -122,6 +124,7 @@ define([
         });
     };
 
+
     Paper.prototype.linkPlanes = function( options ) {
         var fl = new FoldingLine( options );
         options.parent.children.push( fl );
@@ -129,20 +132,24 @@ define([
         this.foldingLines.push( fl );
     };
 
+
     Paper.prototype.render = function() {
         this.planes.forEach(function( plane ) {
             plane.renderToTexture();
         });
     };
 
+
     Paper.prototype.draw = function() {
         this.planes.forEach(function( plane ) {
             this.world.drawPlane( plane );
         }.bind( this ));
+
         this.foldingLines.forEach(function( foldingLine ) {
             this.world.drawFoldingLine( foldingLine );
         }.bind( this ));
     };
+
 
     return Paper;
 });

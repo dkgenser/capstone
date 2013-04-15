@@ -1,26 +1,26 @@
-define([
-    'glMatrix',
-
-    'utilities',
-    'shaders',
-    'Framebuffer',
-    'ModelWorld',
-    'Paper'
-
-], function( glMatrix, utilities, shaders, Framebuffer, ModelWorld, Paper ) {
+define(function( require ) {
     'use strict';
+
+    var glMatrix    = require( 'glMatrix' ),
+        utilities   = require( 'utilities' ),
+        shaders     = require( 'shaders' ),
+        Framebuffer = require( 'Framebuffer' ),
+        ModelWorld  = require( 'ModelWorld' ),
+        Paper       = require( 'Paper' );
 
     var World = function( options ) {
         // Copy all configuration properties directly to the World object.
-        // (this makes more semantic sense, internally and externally)
+        // (externally, this is better than having a "config" property)
         for ( var prop in options ) {
-            this[ prop ] = options[ prop ];
+            if ( options.hasOwnProperty( prop ) ) {
+                this[ prop ] = options[ prop ];
+            }
         }
 
-        this.canvas       = this._initializeCanvas();
-        this.gl           = this._initializeGL();
-        this.program      = this._initializeProgram();
-        this.framebuffers = this._initializeFramebuffers();
+        this.canvas       = this._constructCanvas();
+        this.gl           = this._constructGL();
+        this.program      = this._constructProgram();
+        this.framebuffers = this._constructFramebuffers();
         this.modelWorld   = new ModelWorld({ gl: this.gl });
         this.paper        = new Paper({ world: this });
 
@@ -35,49 +35,8 @@ define([
         // interact.initInteraction(canvas);
     };
 
-    World.prototype.tick = function () {
-        utilities.requestAnimationFrame( World.prototype.tick.bind( this ) );
-        this.gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
-        this.paper.render();
-        this.gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
-        this.paper.draw();
-    };
 
-    World.prototype.rotateMvMatrix = function( options ) {
-        glMatrix.mat4.rotate(
-            this.mvMatrix,                              // out
-            this.mvMatrix,                              // a
-            utilities.radians( options.degrees ),       // radians
-            [ 1, 1, 1 ]                                 // axis
-        );
-    };
-
-    World.prototype.pushMvMatrix = function() {
-        this.mvMatrixStack.push( glMatrix.mat4.clone( this.mvMatrix ) );
-    };
-
-    World.prototype.popMvMatrix = function() {
-        if (this.mvMatrixStack.length === 0) {
-            alert( 'ModelWorld: can\'t pop empty matrix stack!' );
-        }
-        this.mvMatrix = this.mvMatrixStack.pop();
-    };
-
-    World.prototype.setMatrixUniforms = function() {
-        this.gl.uniformMatrix4fv(
-            this.program.pMatrixLocation, false, this.pMatrix
-        );
-        this.gl.uniformMatrix4fv(
-            this.program.mvMatrixLocation, false, this.mvMatrix
-        );
-    };
-
-    // These functions don't assign directly to the properties. Rather,
-    // they just return the value to be assigned. This is better for
-    // testability, reusability and clarity. It lets us see all the
-    // properties of the object straight from the constructor.
-
-    World.prototype._initializeCanvas = function() {
+    World.prototype._constructCanvas = function() {
         var container = document.querySelector( this.containerSelector );
         var canvas = document.createElement( 'canvas' );
         canvas.width = container.width;
@@ -86,7 +45,8 @@ define([
         return canvas;
     };
 
-    World.prototype._initializeGL = function() {
+
+    World.prototype._constructGL = function() {
         var gl;
         try {
             gl = this.canvas.getContext( 'experimental-webgl' );
@@ -99,7 +59,8 @@ define([
         return gl;
     };
 
-    World.prototype._initializeProgram = function() {
+
+    World.prototype._constructProgram = function() {
         var program = this.gl.createProgram();
         this.gl.attachShader( program, shaders.get( this.gl, 'vert' ) );
         this.gl.attachShader( program, shaders.get( this.gl, 'frag' ) );
@@ -129,9 +90,10 @@ define([
         return program;
     };
 
-    World.prototype._initializeFramebuffers = function() {
+
+    World.prototype._constructFramebuffers = function() {
         var fbs = [];
-        for ( var i = 0; i < this.textureLen; i++ ) {
+        for ( var i = 0; i < this.textureLen; i += 1 ) {
             fbs.push( new Framebuffer({
                 world: this,
                 width: this.framebufferWidth,
@@ -142,12 +104,54 @@ define([
         return fbs;
     };
 
+
+    World.prototype.tick = function () {
+        utilities.requestAnimationFrame( World.prototype.tick.bind( this ) );
+        this.gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
+        this.paper.render();
+        this.gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
+        this.paper.draw();
+    };
+
+
+    World.prototype.rotateMvMatrix = function( options ) {
+        glMatrix.mat4.rotate(
+            this.mvMatrix,                              // out
+            this.mvMatrix,                              // a
+            utilities.radians( options.degrees ),       // radians
+            [ 1, 1, 1 ]                                 // axis
+        );
+    };
+
+
+    World.prototype.pushMvMatrix = function() {
+        this.mvMatrixStack.push( glMatrix.mat4.clone( this.mvMatrix ) );
+    };
+
+
+    World.prototype.popMvMatrix = function() {
+        if (this.mvMatrixStack.length === 0) {
+            alert( 'ModelWorld: can\'t pop empty matrix stack!' );
+        }
+        this.mvMatrix = this.mvMatrixStack.pop();
+    };
+
+
+    World.prototype.setMatrixUniforms = function() {
+        this.gl.uniformMatrix4fv(
+            this.program.pMatrixLocation, false, this.pMatrix
+        );
+        this.gl.uniformMatrix4fv(
+            this.program.mvMatrixLocation, false, this.mvMatrix
+        );
+    };
+
+
     World.prototype.drawView = function( view ) {
         this.gl.viewport(
             0, 0, this.framebufferWidth, this.framebufferHeight
         );
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT );
-
         // TODO: also, only calculated once? set and save pMatrix
         glMatrix.mat4.ortho(
             this.pMatrix,
@@ -158,14 +162,12 @@ define([
             0.1,
             2 * this.boundingSphereRadius
         );
-
         glMatrix.mat4.identity( this.mvMatrix );
         glMatrix.mat4.lookAt( this.mvMatrix, view.eye, view.center, view.up );
-
         this.setMatrixUniforms();
-
         this.modelWorld.draw({ world: this });
     };
+
 
     World.prototype._prepareMvMatrixToDraw = function( obj ) {
         this.pushMvMatrix();
@@ -176,6 +178,7 @@ define([
             utilities.radians( obj.orientation )
         );
     };
+
 
     World.prototype.drawPlane = function( planeView ) {
         this._prepareMvMatrixToDraw( planeView );
@@ -203,6 +206,7 @@ define([
         this.popMvMatrix();
     };
 
+
     World.prototype.drawFoldingLine = function( foldingLine ) {
         this._prepareMvMatrixToDraw( foldingLine );
         this.gl.uniform1i( this.program.useTexturesUniform, false);
@@ -215,6 +219,7 @@ define([
         );
         this.popMvMatrix();
     };
+
 
     return World;
 });

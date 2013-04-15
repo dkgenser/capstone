@@ -59,11 +59,12 @@ define([
     ];
     var S_COLORS = [];
     // Concatenate each sub-array four times.
-    for ( var i = 0; i < S_COLORS.length; i++ ) {
-        for ( var j = 0; j < 4; j++ ) {
-            S_COLORS = S_COLORS.concat( S_COLORS_COMPRESSED[ i ] );
-        }
-    }
+    S_COLORS_COMPRESSED.forEach(function( color ) {
+        S_COLORS = S_COLORS.concat( color )
+                           .concat( color )
+                           .concat( color )
+                           .concat( color );
+    });
     S_COLORS = new Float32Array( S_COLORS );
 
     var S_TEXTURE_COORDS = new Float32Array( 48 );

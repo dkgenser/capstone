@@ -6,11 +6,13 @@ define([
     var BufferSet = function( options, buffers ) {
         this.gl = options.gl;
         for ( var name in buffers ) {
-            this[ name ] = new Buffer({
-                gl: this.gl,
-                name: name,
-                data: buffers[ name ]
-            });
+            if ( buffers.hasOwnProperty( name ) ) {
+                this[ name ] = new Buffer({
+                    gl: this.gl,
+                    name: name,
+                    data: buffers[ name ]
+                });
+            }
         }
     };
 
