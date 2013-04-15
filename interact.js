@@ -99,9 +99,10 @@ var selection = {
 					selectedPlane = plane;
 				}
 			});
-
-			interact.setDefault();
-			callback(selectedPlane);
+			if(selectedPlane != null) {
+				interact.setDefault();
+				callback(selectedPlane);
+			}
 		}
 	},
 }

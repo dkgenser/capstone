@@ -144,10 +144,26 @@ var paper = {
 	},
 
 	addView: function(){
+		//TODO: move logic here
 		selection.planeView(function(plane){addView.start(plane);});
 	},
 
-	selectPlane: function(){
-		selection.planeView(function(plane){addView.start(plane);});
+	deleteView: function(){
+		selection.planeView(function(plane){
+			if(paper.planes.indexOf(plane)<= 1){
+				alert("This plane cannot be deleted.");
+				return;
+			}
+			//TODO: make confirm or deny request instead of just an alert
+			else {
+				alert("Are you sure you want to delete this view and all of it's children?");
+			}
+
+			//TODO: also delete children
+			paper.planes.splice(paper.planes.indexOf(plane));
+			paper.flines.splice(paper.flines.indexOf(plane.parentLine));
+		});
+
 	},
+
 };
