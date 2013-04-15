@@ -29,17 +29,15 @@ var interact = {
 var addView = {
 	mouseClicked: false,
 
-	start: function (){
-		//TODO: select view to add to
-		var pPlane = paper.planes[paper.planes.length-1];
-
+	start: function (pPlane){
+		pPlane.selected = true;
 		foldingLine = new FoldingLine(0, pPlane, null);
 		paper.flines.push(foldingLine);
 
 		addView.mouseClicked=true;
 		interact.setDefault();
 
-		//bind function
+		//bind functions to mouse events
 		interact.mouseDown(this.handleMouseDown);
 		interact.mouseUp(this.handleMouseUp(foldingLine));
 		interact.mouseMove(this.handleMouseMove(foldingLine));
@@ -54,6 +52,7 @@ var addView = {
 			if(addView.mouseClicked) return;
 
 			paper.planes.push(foldingLine.createChild());
+			foldingLine.parentPlane.selected = false;
 
 			interact.setDefault();
 		};
@@ -75,30 +74,36 @@ var addView = {
 
 var selection = {
 
-	planeView: function (){
+	planeView: function (callback){
+		alert(callback);
 		interact.setDefault();
 		//bind functions
 		interact.mouseDown(this.handleMouseDown);
-		interact.mouseUp(this.handleMouseUp);
+		interact.mouseUp(this.handleMouseUp(callback));
 	},
 
 	handleMouseDown: function(event){
 		interact.mouseClicked = true;
 	},
 
-	handleMouseUp: function(event){
-		if(!interact.mouseClicked) return;
+	handleMouseUp: function(callback){
 
-		var coords = pixelToWorldCoords(getMouse(event, canvas));
-		var screenCoords = [coords.x, coords.y];
+		return function(event){
+			if(!interact.mouseClicked) return;
 
-		paper.planes.forEach(function(plane){
-			if(plane.intersects(screenCoords)){
-				plane.selected = !plane.selected;
-			}
-		});
+			var coords = pixelToWorldCoords(getMouse(event, canvas));
+			var screenCoords = [coords.x, coords.y];
 
-		interact.setDefault();
+			var selectedPlane; 
+			paper.planes.forEach(function(plane){
+				if(plane.intersects(screenCoords)){
+					selectedPlane = plane;
+				}
+			});
+
+			interact.setDefault();
+			callback(selectedPlane);
+		}
 	},
 }
 

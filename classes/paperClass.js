@@ -144,10 +144,10 @@ var paper = {
 	},
 
 	addView: function(){
-		addView.start();
+		selection.planeView(function(plane){addView.start(plane);});
 	},
 
 	selectPlane: function(){
-		selection.planeView();
+		selection.planeView(function(plane){addView.start(plane);});
 	},
 };
