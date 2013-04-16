@@ -1,9 +1,11 @@
-define([
-], function() {
+define(function( require ) {
     'use strict';
 
     var Framebuffer = function( options ) {
         this.world         = options.world;
+        // TODO: prone to errors to copy gl property: either reference
+        // this.world.gl directly, or set up a getter/setter to make sure
+        // this.gl changes when this.world changes.
         this.gl            = this.world.gl;
         this.width         = options.width;
         this.height        = options.height;
@@ -18,6 +20,7 @@ define([
         this.gl.bindFramebuffer( this.gl.FRAMEBUFFER, null );
     };
 
+
     Framebuffer.prototype._initializeFramebuffer = function() {
         var framebuffer = this.gl.createFramebuffer();
         this.gl.bindFramebuffer(
@@ -28,6 +31,7 @@ define([
         framebuffer.height = this.height;
         return framebuffer;
     };
+
 
     Framebuffer.prototype._initializeTexture = function() {
         var texture  = this.gl.createTexture();
@@ -67,6 +71,7 @@ define([
         return texture;
     };
 
+
     Framebuffer.prototype._initializeRenderbuffer = function() {
         var renderbuffer = this.gl.createRenderbuffer();
         this.gl.bindRenderbuffer(
@@ -88,21 +93,24 @@ define([
         return renderbuffer;
     };
 
+
     Framebuffer.prototype.renderToBuffer = function( view ) {
         this.gl.bindFramebuffer( this.gl.FRAMEBUFFER, this.framebuffer );
         this.world.drawView( view );
-        this.gl.bindTexture( this.gl.TEXTURE_2D, this.texturebuffer );
+        this.gl.bindTexture( this.gl.TEXTURE_2D, this.texture );
         this.gl.generateMipmap( this.gl.TEXTURE_2D );
         this.gl.bindTexture( this.gl.TEXTURE_2D, null );
         this.gl.bindFramebuffer( this.gl.FRAMEBUFFER, null );
     };
 
+
     Framebuffer.prototype.prepareToDraw = function( program ) {
         this.gl.uniform1i( program.useTexturesUniform, true );
         this.gl.activeTexture( this.gl.TEXTURE0 + this.textureNumber );
-        this.gl.bindTexture( this.gl.TEXTURE_2D, this.texturebuffer );
+        this.gl.bindTexture( this.gl.TEXTURE_2D, this.texture );
         this.gl.uniform1i( program.samplerUniform, this.textureNumber );
     };
+
 
     return Framebuffer;
 
