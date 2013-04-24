@@ -6,7 +6,8 @@ define(function( require ) {
         shaders     = require( 'shaders' ),
         Framebuffer = require( 'Framebuffer' ),
         ModelWorld  = require( 'ModelWorld' ),
-        Paper       = require( 'Paper' );
+        Paper       = require( 'Paper' ),
+        Interact    = require( 'interact' );
 
     var World = function( options ) {
         // Copy all configuration properties directly to the World object.
@@ -23,7 +24,8 @@ define(function( require ) {
         this.framebuffers = this._constructFramebuffers();
         this.modelWorld   = new ModelWorld({ gl: this.gl });
         this.paper        = new Paper({ world: this });
-        
+        this.interact     = new Interact({ canvas: this.canvas, gl: this.gl});
+
         this.gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
         this.gl.enable( this.gl.DEPTH_TEST );
         this.gl.depthFunc( this.gl.LEQUAL );
