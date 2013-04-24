@@ -23,7 +23,7 @@ define(function( require ) {
         this.framebuffers = this._constructFramebuffers();
         this.modelWorld   = new ModelWorld({ gl: this.gl });
         this.paper        = new Paper({ world: this });
-
+        
         this.gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
         this.gl.enable( this.gl.DEPTH_TEST );
         this.gl.depthFunc( this.gl.LEQUAL );
@@ -31,16 +31,16 @@ define(function( require ) {
         this.mvMatrix = glMatrix.mat4.create();
         this.pMatrix = glMatrix.mat4.create();
         this.mvMatrixStack = [];
-
-        // interact.initInteraction(canvas);
     };
 
 
     World.prototype._constructCanvas = function() {
         var container = document.querySelector( this.containerSelector );
         var canvas = document.createElement( 'canvas' );
-        canvas.width = container.width;
-        canvas.height = container.height;
+        canvas.width = container.clientWidth;
+        //Yeoman isn't compatible with CSS sizing, 
+        //therefore must determine height with javascript
+        canvas.height = 0.8 * document.height;
         container.appendChild( canvas );
         return canvas;
     };
@@ -107,9 +107,12 @@ define(function( require ) {
 
     World.prototype.tick = function () {
         utilities.requestAnimationFrame( World.prototype.tick.bind( this ) );
+        //Not sufficient to use alpha 0 to not make the views overlap
         this.gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
         this.paper.render();
+
         this.gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
+        this._prepareMvMatrixCamera();
         this.paper.draw();
     };
 
@@ -119,7 +122,7 @@ define(function( require ) {
             this.mvMatrix,                              // out
             this.mvMatrix,                              // a
             utilities.radians( options.degrees ),       // radians
-            [ 1, 1, 1 ]                                 // axis
+            options.axis                                // axis
         );
     };
 
@@ -166,6 +169,30 @@ define(function( require ) {
         glMatrix.mat4.lookAt( this.mvMatrix, view.eye, view.center, view.up );
         this.setMatrixUniforms();
         this.modelWorld.draw({ world: this });
+    };
+
+    World.prototype._prepareMvMatrixCamera = function() {
+        var eye = [0, 0, this.boundingSphereRadius];
+        var center = [0, 0, 0];
+        var up = [0, 1, 0];
+
+        this.gl.viewport(
+            0, 0, this.gl.viewportWidth, this.gl.viewportHeight
+        );
+        this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT );
+        // TODO: also, only calculated once? set and save pMatrix
+        glMatrix.mat4.ortho(
+            this.pMatrix, 
+            -this.gl.viewportWidth/2, 
+            this.gl.viewportWidth/2, 
+            -this.gl.viewportHeight/2, 
+            this.gl.viewportHeight/2, 
+            0.1,
+            2 * this.boundingSphereRadius
+        );
+        glMatrix.mat4.identity( this.mvMatrix );
+        glMatrix.mat4.lookAt( this.mvMatrix, eye, center, up );
+        this.setMatrixUniforms();
     };
 
 

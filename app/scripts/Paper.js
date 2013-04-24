@@ -124,7 +124,8 @@ define(function( require ) {
         });
     };
 
-
+    ///TODO: only will be used once. In all other cases the 
+    //folding line will come first
     Paper.prototype.linkPlanes = function( options ) {
         var fl = new FoldingLine( options );
         options.parent.children.push( fl );
