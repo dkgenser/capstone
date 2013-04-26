@@ -114,7 +114,7 @@ define([
 
         // Draw box
         world.pushMvMatrix();
-        world.rotateMvMatrix({ degrees: this.rCube, axis: [1, 1, 1]});
+        world.rotateMvMatrix({ degrees: this.rCube, axis: [ 1, 1, 1 ] });
         this.S.assignVertexAttributes( world.program );
         this.gl.bindBuffer(
             this.gl.ELEMENT_ARRAY_BUFFER,

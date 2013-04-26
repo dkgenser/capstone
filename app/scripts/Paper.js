@@ -1,12 +1,12 @@
 define(function( require ) {
-    // JSHint is right to complain: the data generation in this module
-    // should be put elsewhere.
+    // TODO: JSHint is right to complain: the data generation in this
+    // module should be put elsewhere.
 
     'use strict';
 
-    var utilities = require( 'utilities' ),
-        BufferSet = require( 'BufferSet' ),
-        PlaneView = require( 'PlaneView' ),
+    var utilities   = require( 'utilities' ),
+        BufferSet   = require( 'BufferSet' ),
+        PlaneView   = require( 'PlaneView' ),
         FoldingLine = require( 'FoldingLine' );
 
     // TODO: make these configurable from main.js
@@ -124,8 +124,8 @@ define(function( require ) {
         });
     };
 
-    ///TODO: only will be used once. In all other cases the 
-    //folding line will come first
+    // TODO: this function is only used once, in the constructor. In all other
+    // other cases, the folding line will come first.
     Paper.prototype.linkPlanes = function( options ) {
         var fl = new FoldingLine( options );
         options.parent.children.push( fl );
