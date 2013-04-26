@@ -9,7 +9,7 @@ define(function( require ) {
 
         var styles = document.defaultView.getComputedStyle( this.canvas, null );
         var getStyle = function( prop ) {
-            return parseInt( styles[prop], 10 ) || 0;
+            return parseInt( styles[ prop ], 10 ) || 0;
         };
         this.doc = {
             stylePaddingLeft: getStyle( 'paddingLeft' ),

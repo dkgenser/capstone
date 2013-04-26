@@ -1,7 +1,8 @@
 define(function( require ) {
     'use strict';
 
-    var glMatrix    = require( 'glMatrix' ),
+    var $           = require( 'jquery' ),
+        glMatrix    = require( 'glMatrix' ),
         utilities   = require( 'utilities' ),
         shaders     = require( 'shaders' ),
         Framebuffer = require( 'Framebuffer' ),
@@ -41,7 +42,7 @@ define(function( require ) {
         var container = document.querySelector( this.containerSelector );
         var canvas = document.createElement( 'canvas' );
         canvas.width = container.clientWidth;
-        canvas.height = 0.8 * document.height;
+        canvas.height = $( window ).height() - 200;
         container.appendChild( canvas );
         return canvas;
     };

@@ -17,6 +17,10 @@ require( [ 'World' ], function( World ) {
 
     var world = new World({
         containerSelector: '#canvasDiv',
+        buttons: {
+            addView: '#add-view',
+            selectPlane: '#select-plane'
+        },
         textureLen: 6,
         framebufferWidth: 512,
         framebufferHeight: 512,
