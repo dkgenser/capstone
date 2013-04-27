@@ -4,6 +4,8 @@ define([
 ], function( utilities ) {
     'use strict';
 
+    var glMatrix = require( 'glMatrix' );
+
     var FoldingLine = function( options ) {
         this.parentPlane = options.parent;
         this.childPlane  = options.child;
@@ -28,13 +30,13 @@ define([
         return angle + 90;
     };
 
+    FoldingLine.prototype.distToParent = function(){
+        return glMatrix.vec3.dist(this.center, this.parentPlane.center);
+    };
+
     return FoldingLine;
 });
 
-
- // FoldingLine.prototype.distToParent = function(){
- // 	return vec3.dist(this.center, this.parentPlane.center);
- // }
 
  // FoldingLine.prototype.createChild = function(){
  // 	if(this.child != null) return this.child;

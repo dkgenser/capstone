@@ -1,7 +1,8 @@
 define(function( require ) {
     'use strict';
 
-    var glMatrix = require( 'glMatrix' );
+    var glMatrix  = require( 'glMatrix' ),
+        utilities = require( 'utilities' );
 
     var PlaneView = function( options ) {
         this.width       = options.width;
@@ -21,61 +22,89 @@ define(function( require ) {
         this.framebuffer.renderToBuffer( this.view );
     };
 
-
     PlaneView.prototype.intersects = function( coords ) {
         return glMatrix.vec2.distance( coords, this.center ) <= this.width / 2;
     };
 
+    PlaneView.prototype._transferDistance = function() {
+        //TODO: set default distance ( (planeWidth + margin) / 2 )
+        if(this.parentLine === null) {
+            return this.width / 2;
+        }
+
+        return this.parentLine.distToParent();
+    };
+
+    PlaneView.prototype.createChild = function( options ) {
+        flCenter    = options.foldingLine.center;
+        flAngle     = options.foldingLine.orientation;
+
+        // center of the child plane
+        var transDist = this._transferDistance();
+        var childPlaneCenter = [
+            flCenter[0] + transDist * Math.cos( utilities.radians( flAngle-90 ) ),
+            flCenter[1] + transDist * Math.sin( utilities.radians( flAngle-90 ) ), 
+            this.center[2]
+        ];
+
+        // child plane's view (camera)
+        var childView = this._createChildView();
+
+        // child plane's rotation
+        var childPlaneOrientation = ( flAngle + 180 ) % 360;
+
+        // compilation of all parts
+        var newChild = new PlaneView({
+            width: this.width,
+            center: childPlaneCenter,
+            orientation: childPlaneOrientation,
+            view: {
+                eye: childView.eye, 
+                center: childView.center, 
+                up: childView.up
+            },
+            framebuffer: options.framebuffer,
+        });
+
+        return newChild;
+    };
+
+    PlaneView.prototype._createChildView = function(){
+        var parentView = this.parentPlane.view;
+        var childView = {
+            eye: glMatrix.vec3.clone(parentView.eye),
+            center: glMatrix.vec3.clone(parentView.center),
+            up: glMatrix.vec3.clone(parentView.up)
+        };
+
+        var lineOfSight = glMatrix.vec3.create();
+        glMatrix.vec3.subtract(lineOfSight, parentView.eye, parentView.center);
+        glMatrix.vec3.normalize(lineOfSight, lineOfSight); 
+        
+        var rotationAxis = glMatrix.vec3.create();
+        var createRA = glMatrix.quat.create();
+        glMatrix.quat.setAxisAngle( createRA, lineOfSight, 
+            utilities.radians( this.orientation + 90 - this.parentPlane.orientation ) );
+        glMatrix.vec3.transformQuat( rotationAxis, parentView.up, createRA );
+        var rotateView = glMatrix.quat.create();
+        glMatrix.quat.setAxisAngle( rotateView, rotationAxis, utilities.radians( -90 ) );
+ 
+        //new eye
+        glMatrix.vec3.transformQuat(childView.eye, childView.eye, rotateView);
+        
+        //new up, first rotation
+        var turnView = glMatrix.quat.create();
+        glMatrix.quat.setAxisAngle(turnView, lineOfSight, 
+            utilities.radians( this.orientation + 180 - this.parentPlane.orientation ) );
+        glMatrix.vec3.transformQuat(childView.up, childView.up, turnView);
+        glMatrix.vec3.normalize(childView.up, childView.up);
+        
+        glMatrix.vec3.transformQuat(childView.up, childView.up, rotateView);
+        glMatrix.vec3.normalize(childView.up, childView.up);
+        
+        return childView;
+    }
+
     return PlaneView;
 });
 
-// PlaneView.prototype.intersects = function(screenCoords) {
-//     return vec2.distance(screenCoords, this.center) <= planeWidth / 2;
-// };
-
-// PlaneView.prototype.transferDistance = function(){
-//     if (this.parentLine === null) {
-//         return (planeWidth + margin) / 2;
-//     }
-//     return this.parentLine.distToParent();
-// };
-
-// PlaneView.prototype.renderToTexture = function() {
-//     this.frameBufferObject.renderToBuffer(this.view);
-// };
-
-// PlaneView.prototype.draw = function() {
-//     mvPushMatrix();
-//     mat4.translate(mvMatrix, mvMatrix, this.center);
-//     mat4.rotateZ(mvMatrix, mvMatrix, degToRad(this.orientation));
-
-//     gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexPositionBuffer);
-//     gl.vertexAttribPointer(shaderProgram.positionLocation, PlaneVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-//     gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexColorBuffer);
-//     gl.vertexAttribPointer(shaderProgram.colorLocation, PlaneVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-//     gl.bindBuffer(gl.ARRAY_BUFFER, PlaneVertexTextureCoordBuffer);
-//     gl.vertexAttribPointer(shaderProgram.textureLocation, PlaneVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-//     this.frameBufferObject.setUpForDraw();
-
-//     setMatrixUniforms();
-//     gl.drawArrays(gl.TRIANGLE_STRIP, 0, PlaneVertexPositionBuffer.numItems);
-
-//     if(this.selected){ //draw circle for highlighting
-//         gl.uniform1i(shaderProgram.useTexturesUniform, false);
-//         gl.bindBuffer(gl.ARRAY_BUFFER, PlaneCircleVertexPositionBuffer);
-//         gl.vertexAttribPointer(shaderProgram.positionLocation, PlaneCircleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-//         gl.bindBuffer(gl.ARRAY_BUFFER, PlaneCircleVertexColorBuffer);
-//         gl.vertexAttribPointer(shaderProgram.colorLocation, PlaneCircleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-//         gl.bindBuffer(gl.ARRAY_BUFFER, PlaneCircleVertexTextureCoordBuffer);
-//         gl.vertexAttribPointer(shaderProgram.textureLocation, PlaneCircleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-//         gl.drawArrays(gl.LINE_LOOP, 0, PlaneCircleVertexPositionBuffer.numItems);
-//     }
-
-//     mvPopMatrix();
-// }

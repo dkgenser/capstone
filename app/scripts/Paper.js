@@ -119,7 +119,7 @@ define(function( require ) {
 
         this.foldingLines = [];
 
-        this.linkPlanes({
+        this._linkPlanes({
             parent: this.planes[0],
             child: this.planes[1],
             center: [ 0, 0, 0 ]
@@ -128,7 +128,7 @@ define(function( require ) {
 
     // TODO: this function is only used once, in the constructor. In all other
     // other cases, the folding line will come first.
-    Paper.prototype.linkPlanes = function( options ) {
+    Paper.prototype._linkPlanes = function( options ) {
         var fl = new FoldingLine( options );
         options.parent.children.push( fl );
         options.child.parentLine = fl;
@@ -151,6 +151,22 @@ define(function( require ) {
         this.foldingLines.forEach(function( foldingLine ) {
             this.world.drawFoldingLine( foldingLine );
         }.bind( this ));
+    };
+
+    Paper.prototype.addChildPlane = function( foldingLine ) {
+        if( foldingLine.childPlane != null ) {
+            return;
+        }
+
+        parentPlane = foldingLine.parentPlane;
+        childPlane  = parentPlane.createChild( {
+            foldingline: foldingLine,
+            framebuffer: this.world.framebuffers.pop()
+        });
+
+        // link foldingline and planes
+        foldingLine.childPlane = childPlane;
+        childPlane.parentLine  = foldingLine;
     };
 
 
