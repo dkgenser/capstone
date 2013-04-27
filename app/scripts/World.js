@@ -26,7 +26,12 @@ define(function( require ) {
         this.framebuffers = this._constructFramebuffers();
         this.modelWorld   = new ModelWorld({ gl: this.gl });
         this.paper        = new Paper({ world: this });
-        this.interact     = new Interact({ canvas: this.canvas, gl: this.gl });
+        this.interact     = new Interact({
+            canvas: this.canvas,
+            gl: this.gl,
+            paper: this.paper,
+            selectors: this.selectors
+        });
 
         this.gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
         this.gl.enable( this.gl.DEPTH_TEST );
@@ -39,7 +44,7 @@ define(function( require ) {
 
 
     World.prototype._constructCanvas = function() {
-        var container = document.querySelector( this.containerSelector );
+        var container = document.querySelector( this.selectors.container );
         var canvas = document.createElement( 'canvas' );
         canvas.width = container.clientWidth;
         canvas.height = $( window ).height() - 200;

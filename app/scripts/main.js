@@ -16,10 +16,10 @@ require( [ 'World' ], function( World ) {
     'use strict';
 
     var world = new World({
-        containerSelector: '#canvasDiv',
-        buttons: {
+        selectors: {
+            container: '#canvasDiv',
             addView: '#add-view',
-            selectPlane: '#select-plane'
+            deleteView: '#delete-view'
         },
         textureLen: 6,
         framebufferWidth: 512,

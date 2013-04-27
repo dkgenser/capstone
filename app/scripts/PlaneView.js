@@ -1,10 +1,10 @@
-define([
-       // 'gl-matrix/mat4',
-       // 'gl-matrix/vec2'
-], function() {
+define(function( require ) {
     'use strict';
 
+    var glMatrix = require( 'glMatrix' );
+
     var PlaneView = function( options ) {
+        this.width       = options.width;
         this.center      = options.center;
         this.orientation = options.orientation;
         this.framebuffer = options.framebuffer;
@@ -19,6 +19,11 @@ define([
 
     PlaneView.prototype.renderToTexture = function() {
         this.framebuffer.renderToBuffer( this.view );
+    };
+
+
+    PlaneView.prototype.intersects = function( coords ) {
+        return glMatrix.vec2.distance( coords, this.center ) <= this.width / 2;
     };
 
     return PlaneView;

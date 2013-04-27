@@ -93,6 +93,7 @@ define(function( require ) {
         this.planes = [
             // Top view
             new PlaneView({
+                width: PLANE_WIDTH,
                 center: [ 0, (PLANE_WIDTH + MARGIN) / 2, 0 ],
                 orientation: 0,
                 view: {
@@ -104,6 +105,7 @@ define(function( require ) {
             }),
             // Front view
             new PlaneView({
+                width: PLANE_WIDTH,
                 center: [ 0, -(PLANE_WIDTH + MARGIN) / 2, 0 ],
                 orientation: 0,
                 view: {
@@ -155,27 +157,3 @@ define(function( require ) {
     return Paper;
 });
 
-/*
-    addView: function(){
-        //TODO: move logic here
-        selection.planeView(function(plane){addView.start(plane);});
-    },
-
-    deleteView: function(){
-        selection.planeView(function(plane){
-            if(paper.planes.indexOf(plane)<= 1){
-                alert("This plane cannot be deleted.");
-                return;
-            }
-            //TODO: make confirm or deny request instead of just an alert
-            else {
-                alert("Are you sure you want to delete this view and all of it's children?");
-            }
-
-            //TODO: also delete children
-            paper.planes.splice(paper.planes.indexOf(plane));
-            paper.flines.splice(paper.flines.indexOf(plane.parentLine));
-        });
-
-    },
-*/
