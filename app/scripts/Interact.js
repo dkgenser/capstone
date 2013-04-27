@@ -15,8 +15,8 @@ define(function( require ) {
         this.$deleteView = $( options.selectors.deleteView );
 
         // Bind event handlers
-        this.$addView.click( this.addViewHandler );
-        this.$deleteView.click( this.deleteViewHandler );
+        this.$addView.click( this.addViewHandler.bind( this ) );
+        this.$deleteView.click( this.deleteViewHandler.bind( this ) );
 
         var styles = document.defaultView.getComputedStyle( this.canvas, null );
         var getStyle = function( prop ) {
@@ -94,7 +94,7 @@ define(function( require ) {
     Interact.prototype.addViewHandler = function() {
         this.setDefault();
         this.$canvas.mousedown(function() {
-            this.mouseClicked = false;
+            this.mouseClicked = true;
         });
         this.$canvas.mouseup(function( e ) {
             if ( this.mouseClicked === false ) {
@@ -104,6 +104,7 @@ define(function( require ) {
             var coords = this.pixelToWorldCoords(
                 this.getMouseCoords( e, this.canvas )
             );
+
             this.paper.planes.forEach(function( plane ) {
                 if ( plane.intersects( [ coords.x, coords.y ] ) ) {
 
