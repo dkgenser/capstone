@@ -95,22 +95,20 @@ define(function( require ) {
         this.setDefault();
         this.$canvas.mousedown(function() {
             this.mouseClicked = true;
-        });
+        }.bind( this ));
         this.$canvas.mouseup(function( e ) {
             if ( this.mouseClicked === false ) {
                 return;
             }
 
-            var coords = this.pixelToWorldCoords(
-                this.getMouseCoords( e, this.canvas )
-            );
+            var coords = this.pixelToWorldCoords( this.getMouseCoords( e ) );
 
             this.paper.planes.forEach(function( plane ) {
                 if ( plane.intersects( [ coords.x, coords.y ] ) ) {
 
                 }
             });
-        });
+        }.bind( this ));
     };
 
 

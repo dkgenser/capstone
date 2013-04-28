@@ -120,8 +120,8 @@ define(function( require ) {
         this.foldingLines = [];
 
         this._linkPlanes({
-            parent: this.planes[0],
-            child: this.planes[1],
+            parent: this.planes[ 0 ],
+            child: this.planes[ 1 ],
             center: [ 0, 0, 0 ]
         });
     };
@@ -154,19 +154,18 @@ define(function( require ) {
     };
 
     Paper.prototype.addChildPlane = function( foldingLine ) {
-        if( foldingLine.childPlane != null ) {
+        if ( foldingLine.childPlane !== null ) {
             return;
         }
 
-        parentPlane = foldingLine.parentPlane;
-        childPlane  = parentPlane.createChild( {
+        var childPlane = foldingLine.parentPlane.createChild({
             foldingline: foldingLine,
             framebuffer: this.world.framebuffers.pop()
         });
 
         // link foldingline and planes
         foldingLine.childPlane = childPlane;
-        childPlane.parentLine  = foldingLine;
+        childPlane.parentLine = foldingLine;
     };
 
 
