@@ -229,7 +229,7 @@ define(function( require ) {
         );
 
         // Draw circle for highlighting
-        if ( this.selected ) {
+        if ( planeView.selected ) {
             this.gl.uniform1i( this.program.useTexturesUniform, false );
             this.paper.planeCircle.assignVertexAttributes( this.program );
             this.gl.drawArrays(

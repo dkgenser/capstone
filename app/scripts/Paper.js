@@ -24,8 +24,8 @@ define(function( require ) {
     var circularVertices = function( options ) {
         var step = 360 / options.n;
         var vertices = [];
+        var radius = PLANE_WIDTH / 2;
         for ( var angle = 0; angle <= 360; angle += step ) {
-            var radius = PLANE_WIDTH / 2;
             var radians = utilities.radians( angle );
             vertices.push( radius * Math.cos( radians ) );
             vertices.push( radius * Math.sin( radians ) );
@@ -52,9 +52,9 @@ define(function( require ) {
     var PLANE_CIRCLE_POSITIONS =
         new Float32Array( circularVertices({ n: PLANE_CIRCLE_SIZE }) );
     var PLANE_CIRCLE_COLORS =
-        new Float32Array( repeatArray( PLANE_CIRCLE_SIZE, [ 1, 1, 0, 1 ] ) );
+        new Float32Array( repeatArray( PLANE_CIRCLE_SIZE + 1, [ 1, 1, 0, 1 ] ) );
     var PLANE_CIRCLE_TEXTURE_COORDS =
-        new Float32Array( 2 * PLANE_CIRCLE_SIZE );
+        new Float32Array( 2 * (PLANE_CIRCLE_SIZE + 1) );
 
     var FOLDING_LINE_SIZE = 2;
     var FOLDING_LINE_POSITIONS = new Float32Array([
