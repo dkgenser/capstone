@@ -90,7 +90,12 @@ define(function( require ) {
     };
 
     Interact.prototype.addView = function() {
-        this.planeSelectHandler( this.addViewHandler.bind( this ) );
+        this.planeSelectHandler( function( plane ) {
+            //TODO: highlight selected plane (currently not working)
+            plane.selected = true;
+            this.addViewHandler( plane );
+            plane.selected = false;
+        }.bind( this ));
     };
 
     Interact.prototype.addViewHandler = function( plane ) {
@@ -100,7 +105,7 @@ define(function( require ) {
         this.fl = this.paper.addFoldingLine({
             parent: plane,
             child: null,
-            center: [ 50, 50, 0 ]
+            center: [ 0, 0, 0 ]
         });
 
         this.mouseClicked = true;
@@ -125,9 +130,8 @@ define(function( require ) {
             }
 
             this.paper.addChildPlane( this.fl );
-            this.fl.parentPlane.selected = false;
-
             this.setDefault();
+
         }.bind( this ));
     };
 
