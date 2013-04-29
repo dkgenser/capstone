@@ -15,7 +15,7 @@ define(function( require ) {
         this.$deleteView = $( options.selectors.deleteView );
 
         // Bind event handlers
-        this.$addView.click( this.addViewHandler.bind( this ) );
+        this.$addView.click( this.addView.bind( this ) );
         this.$deleteView.click( this.deleteViewHandler.bind( this ) );
 
         var styles = document.defaultView.getComputedStyle( this.canvas, null );
@@ -42,9 +42,8 @@ define(function( require ) {
 
     Interact.prototype.setDefault = function() {
         this.$canvas.unbind( 'mousedown' );
-        this.$canvas.unbind( 'dblclick' );
-        this.$document.unbind( 'mouseup' );
-        this.$document.unbind( 'mousemove' );
+        this.$canvas.unbind( 'mouseup' );
+        this.$canvas.unbind( 'mousemove' );
         this.mouseClicked = false;
     };
 
@@ -90,13 +89,16 @@ define(function( require ) {
         };
     };
 
+    Interact.prototype.addView = function() {
+        this.planeSelectHandler( this.addViewHandler.bind( this ) );
+    };
 
-    Interact.prototype.addViewHandler = function() {
+    Interact.prototype.addViewHandler = function( plane ) {
         this.setDefault();
 
         //TODO: add plane selection
         this.fl = this.paper.addFoldingLine({
-            parent: this.paper.planes[ 0 ],
+            parent: plane,
             child: null,
             center: [ 50, 50, 0 ]
         });
@@ -108,7 +110,7 @@ define(function( require ) {
         }.bind( this ));
 
         this.$canvas.mousemove( function( e ) {
-            if ( this.mouseClicked === false ) {
+            if ( this.mouseClicked === true ) {
                 return;
             }
 
@@ -118,17 +120,45 @@ define(function( require ) {
         }.bind( this ));
 
         this.$canvas.mouseup(function( e ) {
-            if ( this.mouseClicked === true ) {
+            if ( this.mouseClicked === false ) {
                 return;
             }
 
             this.paper.addChildPlane( this.fl );
-            //foldingLine.parentPlane.selected = false;
+            this.fl.parentPlane.selected = false;
 
             this.setDefault();
         }.bind( this ));
     };
 
+    Interact.prototype.planeSelectHandler = function( callback ) {
+        this.setDefault();
+
+        this.$canvas.mousedown(function() {
+            this.mouseClicked = true;
+        }.bind( this ));
+
+        this.$canvas.mouseup(function( e ) {
+            if ( this.mouseClicked === false ) {
+                return;
+            }
+            var coords = this.pixelToWorldCoords( this.getMouseCoords( e ) );
+
+            var selectedPlane; 
+            this.paper.planes.forEach( function(plane) {
+                if( plane.intersects( [coords.x, coords.y] ) ) {
+                    selectedPlane = plane;
+                }
+            });
+
+            if(selectedPlane != null) {
+                this.setDefault();
+                callback(selectedPlane);
+            }
+
+            this.mouseClicked = false;
+        }.bind( this ));
+    };
 
     Interact.prototype.deleteViewHandler = function( e ) {
         alert( 'delete view ' + e );
