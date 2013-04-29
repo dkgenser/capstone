@@ -1,0 +1,34 @@
+define(function( require ) {
+    'use strict';
+
+    var $           = require( 'jquery' ),
+        glMatrix    = require( 'glMatrix' ),
+        utilities   = require( 'utilities' ),
+        shaders     = require( 'shaders' ),
+        Framebuffer = require( 'Framebuffer' ),
+        ModelWorld  = require( 'ModelWorld' ),
+        Paper       = require( 'Paper' ),
+        Interact    = require( 'Interact' );
+
+
+    var Prism = function( options ) {
+        this.height = options.height;
+        this.axis   = options.axis;
+        this.base   = options.base;
+
+        //bounding sphere
+        
+    };
+
+    //BufferSet
+    Prism.prototype._constructBuffers = function() {
+        var buffers = {}; 
+
+        return buffers;
+    };
+
+    //TODO: intersects
+
+
+    return Prism;
+});
