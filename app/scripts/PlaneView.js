@@ -48,7 +48,7 @@ define(function( require ) {
         ];
 
         // child plane's view (camera)
-        var childView = this._createChildView();
+        var childView = this._createChildView( options.foldingLine );
 
         // child plane's rotation
         var childPlaneOrientation = ( flAngle + 180 ) % 360;
@@ -69,13 +69,15 @@ define(function( require ) {
         return newChild;
     };
 
-    PlaneView.prototype._createChildView = function(){
-        var parentView = this.parentPlane.view;
-        var childView = {
+    PlaneView.prototype._createChildView = function( foldingLine ){
+        var parentView = foldingLine.parentPlane.view;
+        var childView  = {
             eye: glMatrix.vec3.clone(parentView.eye),
             center: glMatrix.vec3.clone(parentView.center),
             up: glMatrix.vec3.clone(parentView.up)
         };
+        var flAngle    = foldingLine.orientation;
+        var pPAngle    = foldingLine.parentPlane.orientation;
 
         var lineOfSight = glMatrix.vec3.create();
         glMatrix.vec3.subtract(lineOfSight, parentView.eye, parentView.center);
@@ -84,7 +86,7 @@ define(function( require ) {
         var rotationAxis = glMatrix.vec3.create();
         var createRA = glMatrix.quat.create();
         glMatrix.quat.setAxisAngle( createRA, lineOfSight, 
-            utilities.radians( this.orientation + 90 - this.parentPlane.orientation ) );
+            utilities.radians( flAngle + 90 - pPAngle ) );
         glMatrix.vec3.transformQuat( rotationAxis, parentView.up, createRA );
         var rotateView = glMatrix.quat.create();
         glMatrix.quat.setAxisAngle( rotateView, rotationAxis, utilities.radians( -90 ) );
@@ -95,7 +97,7 @@ define(function( require ) {
         //new up, first rotation
         var turnView = glMatrix.quat.create();
         glMatrix.quat.setAxisAngle(turnView, lineOfSight, 
-            utilities.radians( this.orientation + 180 - this.parentPlane.orientation ) );
+            utilities.radians( flAngle + 180 - pPAngle ) );
         glMatrix.vec3.transformQuat(childView.up, childView.up, turnView);
         glMatrix.vec3.normalize(childView.up, childView.up);
         

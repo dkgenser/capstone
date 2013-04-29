@@ -86,28 +86,46 @@ define(function( require ) {
     Interact.prototype.pixelToWorldCoords = function( pixelCoords ) {
         return {
             x: pixelCoords.x - (this.gl.viewportWidth / 2),
-            y: pixelCoords.y - (this.gl.viewportHeight / 2)
+            y: -( pixelCoords.y - (this.gl.viewportHeight / 2) )
         };
     };
 
 
     Interact.prototype.addViewHandler = function() {
         this.setDefault();
+
+        //TODO: add plane selection
+        this.fl = this.paper.addFoldingLine({
+            parent: this.paper.planes[ 0 ],
+            child: null,
+            center: [ 50, 50, 0 ]
+        });
+
+        this.mouseClicked = true;
+
         this.$canvas.mousedown(function() {
-            this.mouseClicked = true;
+            this.mouseClicked = !this.mouseClicked;
         }.bind( this ));
-        this.$canvas.mouseup(function( e ) {
+
+        this.$canvas.mousemove( function( e ) {
             if ( this.mouseClicked === false ) {
                 return;
             }
 
             var coords = this.pixelToWorldCoords( this.getMouseCoords( e ) );
+            this.fl.center = [coords.x, coords.y, 0];
 
-            this.paper.planes.forEach(function( plane ) {
-                if ( plane.intersects( [ coords.x, coords.y ] ) ) {
+        }.bind( this ));
 
-                }
-            });
+        this.$canvas.mouseup(function( e ) {
+            if ( this.mouseClicked === true ) {
+                return;
+            }
+
+            this.paper.addChildPlane( this.fl );
+            //foldingLine.parentPlane.selected = false;
+
+            this.setDefault();
         }.bind( this ));
     };
 

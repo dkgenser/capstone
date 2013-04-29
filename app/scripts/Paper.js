@@ -126,13 +126,14 @@ define(function( require ) {
         });
     };
 
-    // TODO: this function is only used once, in the constructor. In all other
-    // other cases, the folding line will come first.
     Paper.prototype._linkPlanes = function( options ) {
         var fl = new FoldingLine( options );
         options.parent.children.push( fl );
-        options.child.parentLine = fl;
+        if(options.child !== null ) {
+            options.child.parentLine = fl;
+        }
         this.foldingLines.push( fl );
+        return fl;
     };
 
 
@@ -153,19 +154,25 @@ define(function( require ) {
         }.bind( this ));
     };
 
+    Paper.prototype.addFoldingLine = function( options ) {
+        return this._linkPlanes( options );
+    };
+
     Paper.prototype.addChildPlane = function( foldingLine ) {
         if ( foldingLine.childPlane !== null ) {
             return;
         }
 
         var childPlane = foldingLine.parentPlane.createChild({
-            foldingline: foldingLine,
+            foldingLine: foldingLine,
             framebuffer: this.world.framebuffers.pop()
         });
 
         // link foldingline and planes
         foldingLine.childPlane = childPlane;
         childPlane.parentLine = foldingLine;
+
+        this.planes.push(childPlane);
     };
 
 
