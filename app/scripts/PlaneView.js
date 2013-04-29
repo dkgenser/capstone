@@ -36,8 +36,8 @@ define(function( require ) {
     };
 
     PlaneView.prototype.createChild = function( options ) {
-        flCenter    = options.foldingLine.center;
-        flAngle     = options.foldingLine.orientation;
+        var flCenter    = options.foldingLine.center;
+        var flAngle     = options.foldingLine.orientation;
 
         // center of the child plane
         var transDist = this._transferDistance();
@@ -103,7 +103,7 @@ define(function( require ) {
         glMatrix.vec3.normalize(childView.up, childView.up);
         
         return childView;
-    }
+    };
 
     return PlaneView;
 });
