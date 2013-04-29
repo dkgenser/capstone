@@ -15,7 +15,7 @@ define(function( require ) {
         this.$deleteView = $( options.selectors.deleteView );
 
         // Bind event handlers
-        this.$addView.click( this.addView.bind( this ) );
+        this.$addView.click( this.addViewHandler.bind( this ) );
         this.$deleteView.click( this.deleteViewHandler.bind( this ) );
 
         var styles = document.defaultView.getComputedStyle( this.canvas, null );
@@ -89,24 +89,24 @@ define(function( require ) {
         };
     };
 
-    Interact.prototype.addView = function() {
+    Interact.prototype.addViewHandler = function() {
         this.planeSelectHandler( function( plane ) {
             //TODO: highlight selected plane (currently not working)
+            this.fl = this.paper.addFoldingLine({
+                parent: plane,
+                child: null,
+                center: [ 0, 0, 0 ]
+            });
             plane.selected = true;
-            this.addViewHandler( plane );
-            plane.selected = false;
+            this.foldingLineHandler( function() {
+                this.paper.addChildPlane( this.fl );
+                plane.selected = false;
+            }.bind( this ) );
         }.bind( this ));
     };
 
-    Interact.prototype.addViewHandler = function( plane ) {
+    Interact.prototype.foldingLineHandler = function( callback ) {
         this.setDefault();
-
-        //TODO: add plane selection
-        this.fl = this.paper.addFoldingLine({
-            parent: plane,
-            child: null,
-            center: [ 0, 0, 0 ]
-        });
 
         this.mouseClicked = true;
 
@@ -129,8 +129,8 @@ define(function( require ) {
                 return;
             }
 
-            this.paper.addChildPlane( this.fl );
             this.setDefault();
+            callback();
 
         }.bind( this ));
     };
