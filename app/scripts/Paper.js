@@ -185,12 +185,17 @@ define(function( require ) {
         
 
         var deletePlanes = function( plane ) {
+            if ( plane === null ) return;
+            
+            plane.children.forEach( function( childLine ) {
+                deletePlanes( childLine.childPlane );
+            });
+
             this.planes.splice(this.planes.indexOf( plane ));
             this.foldingLines.splice(this.foldingLines.indexOf( plane.parentLine ));
 
-            plane.children.forEach(function( child ) {
-                deletePlane( child );
-            });
+            this.world.framebuffers.push( plane.framebuffer );
+
         }.bind( this );
 
         deletePlanes( planeView );
