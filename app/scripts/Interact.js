@@ -91,7 +91,6 @@ define(function( require ) {
 
     Interact.prototype.addViewHandler = function() {
         this.planeSelectHandler( function( plane ) {
-            //TODO: highlight selected plane (currently not working)
             this.fl = this.paper.addFoldingLine({
                 parent: plane,
                 child: null,
@@ -165,7 +164,20 @@ define(function( require ) {
     };
 
     Interact.prototype.deleteViewHandler = function( e ) {
-        alert( 'delete view ' + e );
+        this.planeSelectHandler( function( plane ) {
+            if(this.paper.planes.indexOf( plane )<= 1){
+                alert("This plane cannot be deleted.");
+                return;
+            }
+            //TODO: make confirm or deny request instead of just an alert
+            else {
+                alert("Are you sure you want to delete this view and all of it's children?");
+            }
+
+            this.paper.deletePlane( plane );
+
+        }.bind( this ));
+
     };
 
 

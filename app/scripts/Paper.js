@@ -163,6 +163,7 @@ define(function( require ) {
             return;
         }
 
+        //TODO: add check for limit on number of framebuffers
         var childPlane = foldingLine.parentPlane.createChild({
             foldingLine: foldingLine,
             framebuffer: this.world.framebuffers.pop()
@@ -173,6 +174,26 @@ define(function( require ) {
         childPlane.parentLine = foldingLine;
 
         this.planes.push(childPlane);
+    };
+
+    Paper.prototype.deletePlane = function( planeView ) {
+        if ( planeView === null ) { return; }
+
+        // Delete the plane and all of it's children
+        // Free up framebuffers for future use
+        //TODO: also delete children
+        
+
+        var deletePlanes = function( plane ) {
+            this.planes.splice(this.planes.indexOf( plane ));
+            this.foldingLines.splice(this.foldingLines.indexOf( plane.parentLine ));
+
+            plane.children.forEach(function( child ) {
+                deletePlane( child );
+            });
+        }.bind( this );
+
+        deletePlanes( planeView );
     };
 
 
