@@ -111,10 +111,15 @@ define(function( require ) {
 
     Interact.prototype.editViewHandler = function() {
         this.planeSelectHandler( function( plane ) {
+            if ( plane.children.length > 0 ) {
+                alert( "You cannot edit this view." );
+                return;
+            }
+
             this.fl = plane.parentLine;
             this.foldingLineHandler( function() {
-                this.paper.addChildPlane( this.fl );
             }.bind( this ) );
+            
         }.bind( this ));
     };
 

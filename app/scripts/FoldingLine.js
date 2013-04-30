@@ -27,6 +27,14 @@ define([
     };
 
 
+    /*FoldingLine.prototype = {
+        get orientation() { return this._orientation; },
+        set orientation(val) {
+            this._orientation = val;
+        }
+    }*/
+
+
     FoldingLine.prototype._calculateOrientation = function() {
         var radians = Math.atan2(
             this.center[1] - this.parentPlane.center[1],
