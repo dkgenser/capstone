@@ -101,9 +101,9 @@ define(function( require ) {
                 child: null,
                 center: [ 0, 0, 0 ]
             });
+            this.paper.addChildPlane( this.fl );
             plane.selected = true;
             this.foldingLineHandler( function() {
-                this.paper.addChildPlane( this.fl );
                 plane.selected = false;
             }.bind( this ) );
         }.bind( this ));
