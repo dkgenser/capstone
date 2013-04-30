@@ -95,6 +95,9 @@ define(function( require ) {
 
 
     Interact.prototype.addViewHandler = function() {
+        this.$addView.addClass( 'btn-primary' );
+        this.$editView.removeClass( 'btn-success' );
+        this.$deleteView.removeClass( 'btn-danger' );
         this.planeSelectHandler( function( plane ) {
             this.fl = this.paper.addFoldingLine({
                 parent: plane,
@@ -106,20 +109,23 @@ define(function( require ) {
             this.foldingLineHandler( function() {
                 plane.selected = false;
             }.bind( this ) );
+            this.$addView.removeClass( 'btn-primary' );
         }.bind( this ));
     };
 
     Interact.prototype.editViewHandler = function() {
+        this.$editView.addClass( 'btn-success' );
+        this.$addView.removeClass( 'btn-primary' );
+        this.$deleteView.removeClass( 'btn-danger' );
         this.planeSelectHandler( function( plane ) {
+            this.$editView.removeClass( 'btn-success' );
             if ( plane.children.length > 0 ) {
-                alert( "You cannot edit this view." );
+                alert( 'You cannot edit this view.' );
                 return;
             }
-
             this.fl = plane.parentLine;
             this.foldingLineHandler( function() {
             }.bind( this ) );
-            
         }.bind( this ));
     };
 
@@ -178,6 +184,9 @@ define(function( require ) {
 
 
     Interact.prototype.deleteViewHandler = function() {
+        this.$deleteView.addClass( 'btn-danger' );
+        this.$addView.removeClass( 'btn-primary' );
+        this.$editView.removeClass( 'btn-success' );
         this.planeSelectHandler(function( plane ) {
             if ( this.paper.planes.indexOf( plane ) <= 1 ){
                 alert( 'This plane cannot be deleted.' );
@@ -187,6 +196,7 @@ define(function( require ) {
                        'of it\'s children?' );
                 this.paper.deletePlane( plane );
             }
+            this.$deleteView.removeClass( 'btn-danger' );
         }.bind( this ));
     };
 
