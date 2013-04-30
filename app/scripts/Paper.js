@@ -175,7 +175,7 @@ define(function( require ) {
     };
 
 
-    // Delete the plane and all of it's children, freeing up its framebuffers
+    // Delete the plane and all of its children, freeing up its framebuffers
     // for future use.
     Paper.prototype.deletePlane = function( planeView ) {
         var deletePlanes = function( plane ) {

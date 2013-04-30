@@ -162,7 +162,7 @@ define(function( require ) {
 
 
     Interact.prototype.deleteViewHandler = function() {
-        this.planeSelectHandler( function( plane ) {
+        this.planeSelectHandler(function( plane ) {
             if ( this.paper.planes.indexOf( plane ) <= 1 ){
                 alert( 'This plane cannot be deleted.' );
             } else {
