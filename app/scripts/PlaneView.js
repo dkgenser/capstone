@@ -39,6 +39,7 @@ define(function( require ) {
         return this.parentLine.distToParent();
     };
 
+
     PlaneView.prototype.update = function( ) {
         var fl        = this.parentLine;
         if ( fl === null ) return;
@@ -49,13 +50,9 @@ define(function( require ) {
             fl.center[0] + transDist * Math.cos( radians ),
             fl.center[1] + transDist * Math.sin( radians ),
             this.center[2]
-        ],
+        ];
         this.orientation = ( fl.orientation + 180 ) % 360,
         this.view = this._calculateView( fl );
-
-        this.children.forEach(function( childLine ) {
-            // TODO: update lines? or not allow planes with children to be updated
-        });
     };
 
 
@@ -141,4 +138,3 @@ define(function( require ) {
 
     return PlaneView;
 });
-
