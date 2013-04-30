@@ -32,78 +32,67 @@ define(function( require ) {
 
 
     PlaneView.prototype._transferDistance = function() {
-        //TODO: set default distance ( (planeWidth + margin) / 2 )
-        if(this.parentLine === null) {
+        // TODO: set default distance ( (planeWidth + margin) / 2 )
+        if (this.parentLine === null) {
             return this.width / 2;
         }
-
         return this.parentLine.distToParent();
     };
 
 
     PlaneView.prototype.createChild = function( options ) {
-        var flCenter = options.foldingLine.center;
-        var flAngle  = options.foldingLine.orientation;
-
-        // center of the child plane
+        var fl        = options.foldingLine;
         var transDist = this._transferDistance();
-        var radians = utilities.radians( flAngle - 90 );
-        var childPlaneCenter = [
-            flCenter[0] + transDist * Math.cos( radians ),
-            flCenter[1] + transDist * Math.sin( radians ),
-            this.center[2]
-        ];
-
-        // child plane's view (camera)
-        var childView = this._createChildView( options.foldingLine );
-
-        // child plane's rotation
-        var childPlaneOrientation = ( flAngle + 180 ) % 360;
-
-        // compilation of all parts
-        var newChild = new PlaneView({
+        var radians   = utilities.radians( fl.orientation - 90 );
+        return new PlaneView({
             width: this.width,
-            center: childPlaneCenter,
-            orientation: childPlaneOrientation,
-            view: {
-                eye: childView.eye,
-                center: childView.center,
-                up: childView.up
-            },
+            center: [
+                fl.center[0] + transDist * Math.cos( radians ),
+                fl.center[1] + transDist * Math.sin( radians ),
+                this.center[2]
+            ],
+            orientation: ( fl.orientation + 180 ) % 360,
+            view: this._createChildView( fl ),
             framebuffer: options.framebuffer
         });
-
-        return newChild;
     };
 
 
-    PlaneView.prototype._createChildView = function( foldingLine ) {
-        var flAngle    = foldingLine.orientation;
-        var pPAngle    = foldingLine.parentPlane.orientation;
-        var parentView = foldingLine.parentPlane.view;
-
-        var childView  = {
-            eye: glMatrix.vec3.clone( parentView.eye ),
-            center: glMatrix.vec3.clone( parentView.center ),
-            up: glMatrix.vec3.clone( parentView.up )
+    PlaneView.prototype.cloneView = function( view ) {
+        return {
+            eye:     glMatrix.vec3.clone( view.eye ),
+            center:  glMatrix.vec3.clone( view.center ),
+            up:      glMatrix.vec3.clone( view.up )
         };
+    };
 
-        var lineOfSight = glMatrix.vec3.create();
+
+    PlaneView.prototype.getLineOfSight = function( view ) {
+        var los = glMatrix.vec3.create();
         glMatrix.vec3.subtract(
-            lineOfSight,
-            parentView.eye,
-            parentView.center
+            los,
+            view.eye,
+            view.center
         );
-        glMatrix.vec3.normalize( lineOfSight, lineOfSight );
+        glMatrix.vec3.normalize( los, los );
+        return los;
+    };
+
+
+    PlaneView.prototype._createChildView = function( fl ) {
+        var parent = fl.parentPlane;
+
+        var childView  = this.cloneView( parent.view );
+        var lineOfSight = this.getLineOfSight( parent.view );
 
         var rotationAxis = glMatrix.vec3.create();
         var createRA = glMatrix.quat.create();
         glMatrix.quat.setAxisAngle(
             createRA,
             lineOfSight,
-            utilities.radians( flAngle + 90 - pPAngle )
+            utilities.radians( fl.orientation + 90 - parent.orientation )
         );
-        glMatrix.vec3.transformQuat( rotationAxis, parentView.up, createRA );
+        glMatrix.vec3.transformQuat( rotationAxis, parent.view.up, createRA );
         var rotateView = glMatrix.quat.create();
         glMatrix.quat.setAxisAngle(
             rotateView,
@@ -119,7 +108,7 @@ define(function( require ) {
         glMatrix.quat.setAxisAngle(
             turnView,
             lineOfSight,
-            utilities.radians( flAngle + 180 - pPAngle )
+            utilities.radians( fl.orientation + 180 - parent.orientation )
         );
         glMatrix.vec3.transformQuat( childView.up, childView.up, turnView );
         glMatrix.vec3.normalize( childView.up, childView.up );

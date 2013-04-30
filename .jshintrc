@@ -13,7 +13,7 @@
     "maxdepth":       2,
     "maxlen":         1000,
     "maxparams":      3,
-    "maxstatements":  30,
+    "maxstatements":  20,
     "quotmark":       "single",
 
     "bitwise":  false,
