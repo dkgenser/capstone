@@ -1,7 +1,9 @@
 define(function( require ) {
     'use strict';
 
+
     var $ = require( 'jquery' );
+
 
     var Interact = function( options ) {
         this.canvas   = options.canvas;
@@ -84,10 +86,11 @@ define(function( require ) {
 
     Interact.prototype.pixelToWorldCoords = function( pixelCoords ) {
         return {
-            x: pixelCoords.x - (this.gl.viewportWidth / 2),
-            y: -( pixelCoords.y - (this.gl.viewportHeight / 2) )
+            x: pixelCoords.x - ( this.gl.viewportWidth / 2 ),
+            y: -( pixelCoords.y - ( this.gl.viewportHeight / 2 ) )
         };
     };
+
 
     Interact.prototype.addViewHandler = function() {
         this.planeSelectHandler( function( plane ) {
@@ -104,9 +107,9 @@ define(function( require ) {
         }.bind( this ));
     };
 
+
     Interact.prototype.foldingLineHandler = function( callback ) {
         this.setDefault();
-
         this.mouseClicked = true;
 
         this.$canvas.mousedown(function() {
@@ -117,22 +120,19 @@ define(function( require ) {
             if ( this.mouseClicked === true ) {
                 return;
             }
-
             var coords = this.pixelToWorldCoords( this.getMouseCoords( e ) );
-            this.fl.center = [coords.x, coords.y, 0];
-
+            this.fl.center = [ coords.x, coords.y, 0 ];
         }.bind( this ));
 
-        this.$canvas.mouseup(function( e ) {
+        this.$canvas.mouseup(function() {
             if ( this.mouseClicked === false ) {
                 return;
             }
-
             this.setDefault();
             callback();
-
         }.bind( this ));
     };
+
 
     Interact.prototype.planeSelectHandler = function( callback ) {
         this.setDefault();
@@ -146,38 +146,32 @@ define(function( require ) {
                 return;
             }
             var coords = this.pixelToWorldCoords( this.getMouseCoords( e ) );
-
-            var selectedPlane; 
-            this.paper.planes.forEach( function(plane) {
-                if( plane.intersects( [coords.x, coords.y] ) ) {
+            var selectedPlane;
+            this.paper.planes.forEach( function( plane ) {
+                if( plane.intersects( [ coords.x, coords.y ] ) ) {
                     selectedPlane = plane;
                 }
             });
-
-            if(selectedPlane != null) {
+            if ( selectedPlane !== undefined ) {
                 this.setDefault();
-                callback(selectedPlane);
+                callback( selectedPlane );
             }
-
             this.mouseClicked = false;
         }.bind( this ));
     };
 
-    Interact.prototype.deleteViewHandler = function( e ) {
+
+    Interact.prototype.deleteViewHandler = function() {
         this.planeSelectHandler( function( plane ) {
-            if(this.paper.planes.indexOf( plane )<= 1){
-                alert("This plane cannot be deleted.");
-                return;
+            if ( this.paper.planes.indexOf( plane ) <= 1 ){
+                alert( 'This plane cannot be deleted.' );
+            } else {
+                // TODO: make confirm or deny request instead of just an alert
+                alert( 'Are you sure you want to delete this view and all ' +
+                       'of it\'s children?' );
+                this.paper.deletePlane( plane );
             }
-            //TODO: make confirm or deny request instead of just an alert
-            else {
-                alert("Are you sure you want to delete this view and all of it's children?");
-            }
-
-            this.paper.deletePlane( plane );
-
         }.bind( this ));
-
     };
 
 
