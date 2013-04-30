@@ -118,7 +118,7 @@ define(function( require ) {
         this.$addView.removeClass( 'btn-primary' );
         this.$deleteView.removeClass( 'btn-danger' );
         this.planeSelectHandler( function( plane ) {
-            if ( plane.children.length > 0 ) {
+            if ( this.paper.planes.indexOf( plane ) <= 1 || plane.children.length > 0 ) {
                 alert( 'You cannot edit this view.' );
                 this.$editView.removeClass( 'btn-success' );
                 return;
