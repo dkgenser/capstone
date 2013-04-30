@@ -118,13 +118,14 @@ define(function( require ) {
         this.$addView.removeClass( 'btn-primary' );
         this.$deleteView.removeClass( 'btn-danger' );
         this.planeSelectHandler( function( plane ) {
-            this.$editView.removeClass( 'btn-success' );
             if ( plane.children.length > 0 ) {
                 alert( 'You cannot edit this view.' );
+                this.$editView.removeClass( 'btn-success' );
                 return;
             }
             this.fl = plane.parentLine;
             this.foldingLineHandler( function() {
+                this.$editView.removeClass( 'btn-success' );
             }.bind( this ) );
         }.bind( this ));
     };
