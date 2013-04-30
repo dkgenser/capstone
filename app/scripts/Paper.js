@@ -185,9 +185,10 @@ define(function( require ) {
             plane.children.forEach(function( childLine ) {
                 deletePlanes( childLine.childPlane );
             });
-            this.planes.splice( this.planes.indexOf( plane ) );
+            
+            this.planes.splice( this.planes.indexOf( plane ), 1 );
             this.foldingLines.splice(
-                this.foldingLines.indexOf( plane.parentLine )
+                this.foldingLines.indexOf( plane.parentLine, 1 )
             );
             this.world.framebuffers.push( plane.framebuffer );
         }.bind( this );
