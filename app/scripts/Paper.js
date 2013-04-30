@@ -119,21 +119,11 @@ define(function( require ) {
 
         this.foldingLines = [];
 
-        this._linkPlanes({
+        this.addFoldingLine({
             parent: this.planes[ 0 ],
             child: this.planes[ 1 ],
             center: [ 0, 0, 0 ]
         });
-    };
-
-    Paper.prototype._linkPlanes = function( options ) {
-        var fl = new FoldingLine( options );
-        options.parent.children.push( fl );
-        if(options.child !== null ) {
-            options.child.parentLine = fl;
-        }
-        this.foldingLines.push( fl );
-        return fl;
     };
 
 
@@ -154,16 +144,24 @@ define(function( require ) {
         }.bind( this ));
     };
 
+
     Paper.prototype.addFoldingLine = function( options ) {
-        return this._linkPlanes( options );
+        var fl = new FoldingLine( options );
+        options.parent.children.push( fl );
+        if ( options.child !== null ) {
+            options.child.parentLine = fl;
+        }
+        this.foldingLines.push( fl );
+        return fl;
     };
+
 
     Paper.prototype.addChildPlane = function( foldingLine ) {
         if ( foldingLine.childPlane !== null ) {
             return;
         }
 
-        //TODO: add check for limit on number of framebuffers
+        // TODO: add check for limit on number of framebuffers
         var childPlane = foldingLine.parentPlane.createChild({
             foldingLine: foldingLine,
             framebuffer: this.world.framebuffers.pop()
@@ -173,31 +171,26 @@ define(function( require ) {
         foldingLine.childPlane = childPlane;
         childPlane.parentLine = foldingLine;
 
-        this.planes.push(childPlane);
+        this.planes.push( childPlane );
     };
 
+
+    // Delete the plane and all of it's children, freeing up its framebuffers
+    // for future use.
     Paper.prototype.deletePlane = function( planeView ) {
-        if ( planeView === null ) { return; }
-
-        // Delete the plane and all of it's children
-        // Free up framebuffers for future use
-        //TODO: also delete children
-        
-
         var deletePlanes = function( plane ) {
-            if ( plane === null ) return;
-            
-            plane.children.forEach( function( childLine ) {
+            if ( plane === null ) {
+                return;
+            }
+            plane.children.forEach(function( childLine ) {
                 deletePlanes( childLine.childPlane );
             });
-
-            this.planes.splice(this.planes.indexOf( plane ));
-            this.foldingLines.splice(this.foldingLines.indexOf( plane.parentLine ));
-
+            this.planes.splice( this.planes.indexOf( plane ) );
+            this.foldingLines.splice(
+                this.foldingLines.indexOf( plane.parentLine )
+            );
             this.world.framebuffers.push( plane.framebuffer );
-
         }.bind( this );
-
         deletePlanes( planeView );
     };
 
