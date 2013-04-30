@@ -6,6 +6,8 @@ define([
 
     var glMatrix = require( 'glMatrix' );
 
+    var SNAP_DELTA = 5;
+    var SNAP_INCRE = 45;
 
     var FoldingLine = function( options ) {
         this.parentPlane = options.parent;
@@ -41,7 +43,18 @@ define([
             this.center[0] - this.parentPlane.center[0]
         );
         var angle = utilities.degrees( radians ) % 360;
+        angle = this._snap( angle );
         return angle + 90;
+    };
+
+    FoldingLine.prototype._snap = function( angle ) {
+        var snap     = Math.round( angle/SNAP_INCRE ) * SNAP_INCRE;
+        if ( Math.abs( angle - snap ) <= SNAP_DELTA ) {
+            return snap;
+        } 
+        else {
+            return angle;
+        }
     };
 
 
