@@ -15,10 +15,12 @@ define(function( require ) {
         this.$document = $( document );
         this.$addView = $( options.selectors.addView );
         this.$deleteView = $( options.selectors.deleteView );
+        this.$editView = $( options.selectors.editView );
 
         // Bind event handlers
         this.$addView.click( this.addViewHandler.bind( this ) );
         this.$deleteView.click( this.deleteViewHandler.bind( this ) );
+        this.$editView.click( this.editViewHandler.bind( this ) );
 
         var styles = document.defaultView.getComputedStyle( this.canvas, null );
         var getStyle = function( prop ) {
@@ -103,6 +105,15 @@ define(function( require ) {
             this.foldingLineHandler( function() {
                 this.paper.addChildPlane( this.fl );
                 plane.selected = false;
+            }.bind( this ) );
+        }.bind( this ));
+    };
+
+    Interact.prototype.editViewHandler = function() {
+        this.planeSelectHandler( function( plane ) {
+            this.fl = plane.parentLine;
+            this.foldingLineHandler( function() {
+                this.paper.addChildPlane( this.fl );
             }.bind( this ) );
         }.bind( this ));
     };

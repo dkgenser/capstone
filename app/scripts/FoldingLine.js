@@ -20,6 +20,9 @@ define([
         set center(val) {
             this._center = val;
             this.orientation = this._calculateOrientation();
+            if ( this.childPlane !== null ) {
+                this.childPlane.update();
+            }
         }
     };
 

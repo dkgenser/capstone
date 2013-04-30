@@ -39,6 +39,25 @@ define(function( require ) {
         return this.parentLine.distToParent();
     };
 
+    PlaneView.prototype.update = function( ) {
+        var fl        = this.parentLine;
+        if ( fl === null ) return;
+
+        var transDist = fl.parentPlane._transferDistance();
+        var radians   = utilities.radians( fl.orientation - 90 );
+        this.center = [
+            fl.center[0] + transDist * Math.cos( radians ),
+            fl.center[1] + transDist * Math.sin( radians ),
+            this.center[2]
+        ],
+        this.orientation = ( fl.orientation + 180 ) % 360,
+        this.view = this._calculateView( fl );
+
+        this.children.forEach(function( childLine ) {
+            // TODO: update lines? or not allow planes with children to be updated
+        });
+    };
+
 
     PlaneView.prototype.createChild = function( options ) {
         var fl        = options.foldingLine;
@@ -52,7 +71,7 @@ define(function( require ) {
                 this.center[2]
             ],
             orientation: ( fl.orientation + 180 ) % 360,
-            view: this._createChildView( fl ),
+            view: this._calculateView( fl ),
             framebuffer: options.framebuffer
         });
     };
@@ -79,7 +98,7 @@ define(function( require ) {
     };
 
 
-    PlaneView.prototype._createChildView = function( fl ) {
+    PlaneView.prototype._calculateView = function( fl ) {
         var parent = fl.parentPlane;
 
         var childView  = this.cloneView( parent.view );

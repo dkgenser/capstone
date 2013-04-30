@@ -19,7 +19,8 @@ require( [ 'World' ], function( World ) {
         selectors: {
             container: '#canvasDiv',
             addView: '#add-view',
-            deleteView: '#delete-view'
+            deleteView: '#delete-view',
+            editView: '#edit-view'
         },
         textureLen: 6,
         framebufferWidth: 512,
