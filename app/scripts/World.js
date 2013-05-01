@@ -115,10 +115,10 @@ define(function( require ) {
     World.prototype.tick = function () {
         utilities.requestAnimationFrame( World.prototype.tick.bind( this ) );
         // Not sufficient to use alpha 0 to not make the views overlap
-        this.gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
+        //this.gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
+        this.gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
         this.paper.render();
 
-        this.gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
         this._prepareMvMatrixCamera();
         this.paper.draw();
     };

@@ -3,6 +3,14 @@ define([
 ], function( BufferSet ) {
     'use strict';
 
+    var repeatArray = function( n, array ) {
+        var xs = [];
+        for ( var i = 0; i < n; i += 1 ) {
+            xs = xs.concat( array );
+        }
+        return xs;
+    };
+
     // TODO: extract these multiplier numbers with ITEM_SIZES in Buffer
 
     var F_POSITIONS = new Float32Array([
@@ -23,7 +31,7 @@ define([
         30, 150, 30, 0, 150, 0, 30, 150, 30, 30, 150, 0, 0, 0, 0, 0, 0, 30, 0,
         150, 30, 0, 0, 0, 0, 150, 30, 0, 150, 0
     ]);
-    var F_COLORS = new Float32Array( 384 );
+    var F_COLORS = new Float32Array( repeatArray( 96, [0.0, 0.0, 0.0, 1.0] ) );
     var F_TEXTURE_COORDS = new Float32Array( 192 );
 
     var S_POSITIONS = new Float32Array([
