@@ -44,12 +44,12 @@ define(function( require ) {
         var fl        = this.parentLine;
         if ( fl === null ) return;
 
-        var transDist = fl.parentPlane._transferDistance();
+        var distance  = fl.parentPlane._transferDistance() + fl.distToParent();
         var radians   = utilities.radians( fl.orientation - 90 );
         this.center = [
-            fl.center[0] + transDist * Math.cos( radians ),
-            fl.center[1] + transDist * Math.sin( radians ),
-            this.center[2]
+            fl.parentPlane.center[0] + distance * Math.cos( radians ),
+            fl.parentPlane.center[1] + distance * Math.sin( radians ),
+            fl.parentPlane.center[2]
         ];
         this.orientation = ( fl.orientation + 180 ) % 360,
         this.view = this._calculateView( fl );
@@ -58,13 +58,13 @@ define(function( require ) {
 
     PlaneView.prototype.createChild = function( options ) {
         var fl        = options.foldingLine;
-        var transDist = this._transferDistance();
+        var distance  = this._transferDistance() + fl.distToParent();
         var radians   = utilities.radians( fl.orientation - 90 );
         return new PlaneView({
             width: this.width,
             center: [
-                fl.center[0] + transDist * Math.cos( radians ),
-                fl.center[1] + transDist * Math.sin( radians ),
+                this.center[0] + distance * Math.cos( radians ),
+                this.center[1] + distance * Math.sin( radians ),
                 this.center[2]
             ],
             orientation: ( fl.orientation + 180 ) % 360,
