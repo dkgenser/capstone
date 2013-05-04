@@ -1,0 +1,8 @@
+
+// We can use SCSS in this file, and Grunt will compile it to main.css.
+
+$iconSpritePath: "../images/glyphicons-halflings.png";
+$iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
+
+@import 'sass-bootstrap/lib/bootstrap';
+
