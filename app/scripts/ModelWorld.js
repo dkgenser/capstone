@@ -1,15 +1,8 @@
-define([
-    'BufferSet'
-], function( BufferSet ) {
+define(function( require ) {
     'use strict';
 
-    var repeatArray = function( n, array ) {
-        var xs = [];
-        for ( var i = 0; i < n; i += 1 ) {
-            xs = xs.concat( array );
-        }
-        return xs;
-    };
+    var Plane   = require( 'Plane' ),
+        BufferSet   = require( 'BufferSet' );
 
     // TODO: extract these multiplier numbers with ITEM_SIZES in Buffer
 
@@ -34,31 +27,10 @@ define([
     var F_COLOR  = [0.0, 0.0, 0.0, 1.0];
     var F_TEXTURE_COORDS = new Float32Array( 192 );
 
-    var S_POSITIONS = new Float32Array([
-        // Front face
-        -50.0, -50.0, 50.0, 50.0, -50.0, 50.0,
-        50.0, 50.0, 50.0, -50.0, 50.0, 50.0,
-        // Back face
-        -50.0, -50.0, -50.0, -50.0,  50.0, -50.0,
-        50.0,  50.0, -50.0, 50.0, -50.0, -50.0,
-        // Top face
-        -50.0,  50.0, -50.0, -50.0,  50.0,  50.0,
-        50.0,  50.0,  50.0, 50.0,  50.0, -50.0,
-        // Bottom face
-        -50.0, -50.0, -50.0, 50.0, -50.0, -50.0,
-        50.0, -50.0,  50.0, -50.0, -50.0,  50.0,
-        // Right face
-        50.0, -50.0, -50.0, 50.0,  50.0, -50.0,
-        50.0,  50.0,  50.0, 50.0, -50.0,  50.0,
-        // Left face
-        -50.0, -50.0, -50.0, -50.0, -50.0,  50.0,
-        -50.0,  50.0,  50.0, -50.0,  50.0, -50.0,
-    ]);
-
-    // TODO: abstract out color logic (apply to Paper too)
 
     var ModelWorld = function ( options ) {
         this.gl    = options.gl;
+        this.world = options.world;
         this.rCube = options.rCube || 0;
 
         // TODO: allow callers to control the data going in
@@ -68,16 +40,46 @@ define([
             colors: F_COLOR,
             textureCoords: F_TEXTURE_COORDS
         });
+
+        this.objects = [];
+
+        this.objects.push( new Plane ({
+            gl: this.gl,
+            world: this.world,
+            points: [
+                [-50.0, -50.0, 50.0],
+                [ 50.0, -50.0, 50.0],
+                [ 50.0,  50.0, 50.0],
+                [-50.0,  50.0, 50.0],
+            ],
+            wireframe: true,
+        }) );
+
+
     };
 
-    ModelWorld.prototype.draw = function( options ) {
-        var world = options.world;
-        this.gl.uniform1i( world.program.useTexturesUniform, false );
+    ModelWorld.prototype.draw = function() {
+        this.gl.uniform1i( this.world.program.useTexturesUniform, false );
 
         // Draw F
-        this.F.assignVertexAttributes( world.program );
+        this.F.assignVertexAttributes( this.world.program );
         this.gl.drawArrays( this.gl.TRIANGLES, 0, this.F.positions.numItems );
 
+        this.objects.forEach( function( obj ){
+            obj.draw();
+        });
+    };
+
+    ModelWorld.prototype.intersect = function( options ) {
+        var collection = [];
+
+        this.objects.forEach( function( obj ){
+            if ( obj.intersects( options ) ) { 
+                collection.push( obj );
+            }
+        });
+
+        return collection;
     };
 
     return ModelWorld;

@@ -13,6 +13,9 @@ define(function( require ) {
         this.framebuffer = options.framebuffer;
         this.view        = options.view;
 
+        this.view.mvMatrix = glMatrix.mat4.create();
+        this._calculateMVMatrix();
+
         this.selected = false;
 
         // Tree information
@@ -40,6 +43,12 @@ define(function( require ) {
     };
 
 
+    PlaneView.prototype._calculateMVMatrix = function() {
+        glMatrix.mat4.identity( this.view.mvMatrix );
+        glMatrix.mat4.lookAt( this.view.mvMatrix, this.view.eye, this.view.center, this.view.up );
+    };
+
+
     PlaneView.prototype.update = function( ) {
         var fl        = this.parentLine;
         if ( fl === null ) return;
@@ -53,6 +62,7 @@ define(function( require ) {
         ];
         this.orientation = ( fl.orientation + 180 ) % 360,
         this.view = this._calculateView( fl );
+        this._calculateMVMatrix();
     };
 
 
@@ -78,7 +88,8 @@ define(function( require ) {
         return {
             eye:     glMatrix.vec3.clone( view.eye ),
             center:  glMatrix.vec3.clone( view.center ),
-            up:      glMatrix.vec3.clone( view.up )
+            up:      glMatrix.vec3.clone( view.up ),
+            pMatrix: view.pMatrix,
         };
     };
 

@@ -24,7 +24,7 @@ define(function( require ) {
         this.gl           = this._constructGL();
         this.program      = this._constructProgram();
         this.framebuffers = this._constructFramebuffers();
-        this.modelWorld   = new ModelWorld({ gl: this.gl });
+        this.modelWorld   = new ModelWorld({ gl: this.gl, world: this });
         this.paper        = new Paper({ world: this });
         this.interact     = new Interact({
             canvas: this.canvas,
@@ -40,6 +40,9 @@ define(function( require ) {
         this.mvMatrix = glMatrix.mat4.create();
         this.pMatrix = glMatrix.mat4.create();
         this.mvMatrixStack = [];
+
+        this.camMVMatrix = this._constructMVMatrix();
+        this.camPMatrix  = this._constructPMatrix();
     };
 
 
@@ -112,6 +115,35 @@ define(function( require ) {
     };
 
 
+    World.prototype._constructPMatrix = function() {
+        var matrix = glMatrix.mat4.create();
+
+        glMatrix.mat4.ortho(
+            matrix,
+            -this.gl.viewportWidth/2,
+            this.gl.viewportWidth/2,
+            -this.gl.viewportHeight/2,
+            this.gl.viewportHeight/2,
+            0.1,
+            2 * this.boundingSphereRadius
+        );
+
+        return matrix;
+    };
+
+
+    World.prototype._constructMVMatrix = function() {
+        var eye    = [ 0, 0, this.boundingSphereRadius ];
+        var center = [ 0, 0, 0 ];
+        var up     = [ 0, 1, 0 ];
+
+        var matrix = glMatrix.mat4.create();
+        glMatrix.mat4.identity( matrix );
+        glMatrix.mat4.lookAt( matrix, eye, center, up );
+        return matrix;
+    };
+
+
     World.prototype.tick = function () {
         utilities.requestAnimationFrame( World.prototype.tick.bind( this ) );
         // Not sufficient to use alpha 0 to not make the views overlap
@@ -154,51 +186,42 @@ define(function( require ) {
         );
     };
 
+    World.prototype.viewPMatrix = function() {
+        var pMatrix = glMatrix.mat4.create();
+
+        glMatrix.mat4.ortho(
+            pMatrix,
+            -this.framebufferWidth / 2,
+            this.framebufferHeight / 2,
+            -this.framebufferWidth / 2,
+            this.framebufferHeight / 2,
+            0.1,
+            2 * this.boundingSphereRadius
+        );
+
+        return pMatrix;
+    };
+
 
     World.prototype.drawView = function( view ) {
         this.gl.viewport(
             0, 0, this.framebufferWidth, this.framebufferHeight
         );
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT );
-        // TODO: also, only calculated once? set and save pMatrix
-        glMatrix.mat4.ortho(
-            this.pMatrix,
-            -this.framebufferWidth / 2,
-            this.framebufferHeight / 2,
-            -this.framebufferWidth / 2,
-            this.framebufferHeight / 2,
-            0.1,
-            2 * this.boundingSphereRadius
-        );
-        glMatrix.mat4.identity( this.mvMatrix );
-        glMatrix.mat4.lookAt( this.mvMatrix, view.eye, view.center, view.up );
+        glMatrix.mat4.copy( this.pMatrix, view.pMatrix );
+        glMatrix.mat4.copy( this.mvMatrix, view.mvMatrix );
         this.setMatrixUniforms();
-        this.modelWorld.draw({ world: this });
+        this.modelWorld.draw();
     };
 
 
     World.prototype._prepareMvMatrixCamera = function() {
-        // TODO: should these values be configurable?
-        var eye    = [ 0, 0, this.boundingSphereRadius ];
-        var center = [ 0, 0, 0 ];
-        var up     = [ 0, 1, 0 ];
-
         this.gl.viewport(
             0, 0, this.gl.viewportWidth, this.gl.viewportHeight
         );
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT );
-        // TODO: also, only calculated once? set and save pMatrix
-        glMatrix.mat4.ortho(
-            this.pMatrix,
-            -this.gl.viewportWidth/2,
-            this.gl.viewportWidth/2,
-            -this.gl.viewportHeight/2,
-            this.gl.viewportHeight/2,
-            0.1,
-            2 * this.boundingSphereRadius
-        );
-        glMatrix.mat4.identity( this.mvMatrix );
-        glMatrix.mat4.lookAt( this.mvMatrix, eye, center, up );
+        glMatrix.mat4.copy( this.pMatrix, this.camPMatrix );
+        glMatrix.mat4.copy( this.mvMatrix, this.camMVMatrix );
         this.setMatrixUniforms();
     };
 

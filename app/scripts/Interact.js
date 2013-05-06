@@ -16,11 +16,14 @@ define(function( require ) {
         this.$addView = $( options.selectors.addView );
         this.$deleteView = $( options.selectors.deleteView );
         this.$editView = $( options.selectors.editView );
+        this.$select = $( options.selectors.select );
 
         // Bind event handlers
         this.$addView.click( this.addViewHandler.bind( this ) );
         this.$deleteView.click( this.deleteViewHandler.bind( this ) );
         this.$editView.click( this.editViewHandler.bind( this ) );
+        this.$select.click( this.selectHandler.bind( this ) );
+
 
         var styles = document.defaultView.getComputedStyle( this.canvas, null );
         var getStyle = function( prop ) {
@@ -94,6 +97,68 @@ define(function( require ) {
     };
 
 
+    Interact.prototype._worldToPlaneCoords = function( options ) {
+        var plane       = options.plane;
+        var worldCoords = options.coords;
+        
+        // adapted from Jeshua Bratman
+        /* unproject - convert screen coordinate to WebGL Coordinates 
+         *   winx, winy - point on the screen 
+         *   winz       - winz=0 corresponds to newPoint and winzFar corresponds to farPoint 
+         *   mat        - model-view-projection matrix 
+         *   viewport   - array describing the canvas [xTL,yTL,width,height] 
+         */
+        var coords = [0, 0, 0, 1];
+        coords[0] = 2 * (worldCoords[0] - viewport[0])/viewport[2] - 1; 
+        coords[1] = 2 * (worldCoords[1] - viewport[1])/viewport[3] - 1; 
+        coords[2] = 2 * worldCoords[2] - 1;
+
+        var invMat = glMatrix.mat4.create(); 
+        glMatrix.mat4.invert( invMat, mat );
+
+        glMatrix.vec4.transformMat4( coords, coords, invMat ); 
+        return [ coords[0]/coords[3], coords[1]/coords[3], coords[2]/coords[3] ]; 
+    };
+
+
+    Interact.prototype.selectHandler = function() {
+        this.paper.world.modelWorld.objects.forEach( function ( obj ) {
+            obj.selected = false;
+        });
+
+        this.planeSelectHandler( function( plane ) {
+            var objects = this.paper.world.modelWorld.intersect({ 
+                eye: plane.view.eye,
+                direction: plane.getLineOfSight( plane.view ),
+                min: .0001,
+                max: 2 * this.paper.world.boundingSphereRadius,
+            });
+
+            objects.forEach( function ( obj ) {
+                obj.selected = true;
+            });
+        }.bind( this ));
+    };
+
+
+    Interact.prototype.deleteViewHandler = function() {
+        this.$deleteView.addClass( 'btn-danger' );
+        this.$addView.removeClass( 'btn-primary' );
+        this.$editView.removeClass( 'btn-success' );
+        this.planeSelectHandler(function( plane ) {
+            if ( this.paper.planes.indexOf( plane ) <= 1 ){
+                alert( 'This plane cannot be deleted.' );
+            } else {
+                // TODO: make confirm or deny request instead of just an alert
+                alert( 'Are you sure you want to delete this view and all ' +
+                       'of it\'s children?' );
+                this.paper.deletePlane( plane );
+            }
+            this.$deleteView.removeClass( 'btn-danger' );
+        }.bind( this ));
+    };
+
+
     Interact.prototype.addViewHandler = function() {
         this.$addView.addClass( 'btn-primary' );
         this.$editView.removeClass( 'btn-success' );
@@ -112,6 +177,7 @@ define(function( require ) {
             this.$addView.removeClass( 'btn-primary' );
         }.bind( this ));
     };
+
 
     Interact.prototype.editViewHandler = function() {
         this.$editView.addClass( 'btn-success' );
@@ -180,24 +246,6 @@ define(function( require ) {
                 callback( selectedPlane );
             }
             this.mouseClicked = false;
-        }.bind( this ));
-    };
-
-
-    Interact.prototype.deleteViewHandler = function() {
-        this.$deleteView.addClass( 'btn-danger' );
-        this.$addView.removeClass( 'btn-primary' );
-        this.$editView.removeClass( 'btn-success' );
-        this.planeSelectHandler(function( plane ) {
-            if ( this.paper.planes.indexOf( plane ) <= 1 ){
-                alert( 'This plane cannot be deleted.' );
-            } else {
-                // TODO: make confirm or deny request instead of just an alert
-                alert( 'Are you sure you want to delete this view and all ' +
-                       'of it\'s children?' );
-                this.paper.deletePlane( plane );
-            }
-            this.$deleteView.removeClass( 'btn-danger' );
         }.bind( this ));
     };
 

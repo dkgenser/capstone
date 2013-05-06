@@ -97,7 +97,8 @@ define(function( require ) {
                 view: {
                     eye: [ 0, this.world.boundingSphereRadius, 0 ],
                     center: [ 0, 0, 0 ],
-                    up: [ 0, 0, -1 ]
+                    up: [ 0, 0, -1 ],
+                    pMatrix: this.world.viewPMatrix(),
                 },
                 framebuffer: this.world.framebuffers.pop()
             }),
@@ -109,7 +110,8 @@ define(function( require ) {
                 view: {
                     eye: [ 0, 0, this.world.boundingSphereRadius ],
                     center: [ 0, 0, 0 ],
-                    up: [ 0, 1, 0 ]
+                    up: [ 0, 1, 0 ],
+                    pMatrix: this.world.viewPMatrix(),
                 },
                 framebuffer: this.world.framebuffers.pop()
             })

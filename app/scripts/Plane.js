@@ -1,6 +1,8 @@
-define(function() {
+define(function( require ) {
     'use strict';
 
+    var BufferSet   = require( 'BufferSet' ),
+        glMatrix    = require( 'glMatrix' );
 
     // TODO: blending, mixing opaque and transparent object
     // requires sorting objects by their proximity to the screen
@@ -12,21 +14,41 @@ define(function() {
 
     // Requires an array of counter-clockwise points
     var Plane = function( options ) {
-        this.points    = options.points;
-        this.wireframe = options.wireframe;
+        this.world     = options.world;
         this.gl        = options.gl;
 
-        // bounding sphere
+        this.points    = options.points;
+        this.wireframe = options.wireframe;
+        
+        this.selected  = false;
+        this._constructBuffers();
+        // TODO: bounding sphere
     };
 
 
     // BufferSet
     Plane.prototype._constructBuffers = function() {
-        return new BufferSet( { gl: this.gl }, {
-            positions:      this._constructTriangles,
-            colors:         FOLDING_LINE_COLORS,
-            textureCoords:  FOLDING_LINE_TEXTURE_COORDS
+        //Wireframe buffer 
+        this.wireBuffer = new BufferSet( { gl: this.gl }, {
+            positions:      this._constructWireframe(),
+            colors:         WIRE_COLOR,
+            textureCoords:  new Float32Array( 2 *(this.points.length) ),
         });
+
+        //Planes buffer
+        this.planeBuffer = new BufferSet( { gl: this.gl }, {
+            positions:      this._constructTriangles(),
+            colors:         PLANE_SELECT_COLOR,
+            textureCoords:  new Float32Array( 2 *( 3 *( this.points.length - 2 ))),
+        });
+    };
+
+    Plane.prototype._constructWireframe = function() {
+        var positions = [];
+        for(var i = 0; i < this.points.length; i++) {
+            positions = positions.concat( this.points[i] );
+        }; 
+        return new Float32Array( positions );
     };
 
     Plane.prototype._constructTriangles = function() {
@@ -38,22 +60,99 @@ define(function() {
 
         for(var i = 2; i < this.points.length; i++) {
             next = this.points[i];
-            verticies.push( first );
-            verticies.push( last );
-            verticies.push( next );
+            verticies = verticies.concat( first );
+            verticies = verticies.concat( last );
+            verticies = verticies.concat( next );
 
             last = next;
         };
 
-        return verticies;
+        return new Float32Array( verticies );
     };
 
     Plane.prototype.draw = function() {
+        this.gl.uniform1i( this.world.program.useTexturesUniform, false );
 
+        //LINE_LOOP
+        this.wireBuffer.assignVertexAttributes( this.world.program );
+        this.world.setMatrixUniforms();
+        this.gl.drawArrays(
+            this.gl.LINE_LOOP,
+            0,
+            this.wireBuffer.positions.numItems
+        );
+
+        //TRIANGLES
+        if( this.selected ) { 
+            this.planeBuffer.assignVertexAttributes( this.world.program );
+            this.world.setMatrixUniforms();
+            this.gl.drawArrays(
+                this.gl.TRIANGLE_STRIP,
+                0,
+                this.planeBuffer.positions.numItems
+            ); 
+        }
     };
 
-    // TODO: intersects, select
+
+    /* Code adapted from raytracer assignment */
+    Plane.prototype.intersects = function( options ) {
+        var e   = options.eye;
+        var d   = options.direction;
+        var t   = options.time;
+        var min = options.min;
+        var max = options.max;
+        
+        var a = this.points[0];
+        var b = this.points[1];
+        var c = this.points[2];
+
+        var u = [0, 0, 0];
+        var v = [0, 0, 0];
+        var w = [0, 0, 0];
+
+        glMatrix.vec3.subtract(u, a, b);
+        glMatrix.vec3.subtract(v, a, c);
+        glMatrix.vec3.subtract(w, a, e);
+
+        var eihf = v[1]*d[2] - d[1]*v[2];
+        var gfdi = d[0]*v[2] - v[0]*d[2];
+        var dheg = v[0]*d[1] - d[0]*v[1];
+        var akjb = u[0]*w[1] - w[0]*u[1];
+        var jcal = w[0]*u[2] - u[0]*w[2];
+        var blkc = u[1]*w[2] - w[1]*u[2];
+
+        var M = u[0]*eihf + u[1]*gfdi + u[2]*dheg;
+
+        //calculated first in hopes of gaining some efficiency
+        var tempt = (v[2]*akjb + v[1]*jcal + v[0]*blkc) / M;
+
+        if( tempt < min || tempt > max )
+        {
+            //alert(tempt);
+            return false;
+        }
+
+        if( t !== null ) { t = tempt; }
+
+        var beta = (w[0]*eihf + w[1]*gfdi + w[2]*dheg) / M;
+        //alert ( beta );
+
+        if( beta<0 || beta>1 ) 
+        {
+            return false;
+        }
+
+        var gamma = (d[2]*akjb + d[1]*jcal + d[0]*blkc) / M;
+        //alert( gamma );
+        if( gamma<0 || gamma > 1 - beta ) 
+        {
+            return false;
+        }
+
+        return true;
+    };
 
 
-    return Prism;
+    return Plane;
 });

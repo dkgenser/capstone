@@ -20,7 +20,8 @@ require( [ 'World' ], function( World ) {
             container: '#canvasDiv',
             addView: '#add-view',
             deleteView: '#delete-view',
-            editView: '#edit-view'
+            editView: '#edit-view',
+            select: '#select',
         },
         textureLen: 6,
         framebufferWidth: 512,
