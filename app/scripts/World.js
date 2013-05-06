@@ -33,7 +33,7 @@ define(function( require ) {
             selectors: this.selectors
         });
 
-        this.gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
+        this.gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
         this.gl.enable( this.gl.DEPTH_TEST );
         this.gl.depthFunc( this.gl.LEQUAL );
 
@@ -83,7 +83,6 @@ define(function( require ) {
         }.bind( this );
         bindAttr( 'positionLocation', 'aVertexPosition' );
         bindAttr( 'textureLocation', 'aTextureCoord' );
-        bindAttr( 'colorLocation', 'aVertexColor' );
 
         var bindUniform = function( property, attr ) {
             program[ property ] = this.gl.getUniformLocation( program, attr );
@@ -93,6 +92,7 @@ define(function( require ) {
         bindUniform( 'mvMatrixLocation', 'uMVMatrix' );
         bindUniform( 'pMatrixLocation', 'uPMatrix' );
         bindUniform( 'useTexturesUniform', 'uUseTextures' );
+        bindUniform( 'colorLocation', 'uVertexColor' );
 
         return program;
     };
@@ -115,8 +115,6 @@ define(function( require ) {
     World.prototype.tick = function () {
         utilities.requestAnimationFrame( World.prototype.tick.bind( this ) );
         // Not sufficient to use alpha 0 to not make the views overlap
-        //this.gl.clearColor( 0.5, 0.5, 0.5, 1.0 );
-        this.gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
         this.paper.render();
 
         this._prepareMvMatrixCamera();

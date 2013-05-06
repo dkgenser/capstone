@@ -40,7 +40,7 @@ define(function( require ) {
         -PLANE_WIDTH/2, -PLANE_WIDTH/2, 0,      // Bottom-left corner
         PLANE_WIDTH/2, -PLANE_WIDTH/2, 0,       // Bottom-right corner
     ]);
-    var PLANE_VERTEX_COLORS = new Float32Array( 16 );
+    var PLANE_VERTEX_COLOR  = [0.0, 0.0, 0.0, 1.0];
     var PLANE_VERTEX_TEXTURE_COORDS = new Float32Array([
         0.0, 1.0,                               // Top-left corner
         1.0, 1.0,                               // Top-right corner
@@ -51,8 +51,7 @@ define(function( require ) {
     var PLANE_CIRCLE_SIZE = 72;
     var PLANE_CIRCLE_POSITIONS =
         new Float32Array( circularVertices({ n: PLANE_CIRCLE_SIZE }) );
-    var PLANE_CIRCLE_COLORS =
-        new Float32Array( repeatArray( PLANE_CIRCLE_SIZE + 1, [ 1, 1, 0, 1 ] ) );
+    var PLANE_CIRCLE_COLOR = [ 1.0, 1.0, 0.0, 1.0 ];
     var PLANE_CIRCLE_TEXTURE_COORDS =
         new Float32Array( 2 * (PLANE_CIRCLE_SIZE + 1) );
 
@@ -61,8 +60,7 @@ define(function( require ) {
         -(PLANE_WIDTH * 0.75), 0, 0,            // Left
         (PLANE_WIDTH * 0.75), 0, 0,             // Right
     ]);
-    var FOLDING_LINE_COLORS =
-        new Float32Array( repeatArray( FOLDING_LINE_SIZE, [ 0, 0, 0, 1 ] ) );
+    var FOLDING_LINE_COLOR = [ 0.0, 0.0, 0.0, 1.0 ];
     var FOLDING_LINE_TEXTURE_COORDS =
         new Float32Array( FOLDING_LINE_SIZE * 2 );
 
@@ -74,19 +72,19 @@ define(function( require ) {
 
         this.planeVertex = new BufferSet( { gl: this.world.gl }, {
             positions:      PLANE_VERTEX_POSITIONS,
-            colors:         PLANE_VERTEX_COLORS,
+            colors:         PLANE_VERTEX_COLOR,
             textureCoords:  PLANE_VERTEX_TEXTURE_COORDS
         });
 
         this.planeCircle = new BufferSet( { gl: this.world.gl }, {
             positions:      PLANE_CIRCLE_POSITIONS,
-            colors:         PLANE_CIRCLE_COLORS,
+            colors:         PLANE_CIRCLE_COLOR,
             textureCoords:  PLANE_CIRCLE_TEXTURE_COORDS
         });
 
         this.foldingLine = new BufferSet( { gl: this.world.gl }, {
             positions:      FOLDING_LINE_POSITIONS,
-            colors:         FOLDING_LINE_COLORS,
+            colors:         FOLDING_LINE_COLOR,
             textureCoords:  FOLDING_LINE_TEXTURE_COORDS
         });
 

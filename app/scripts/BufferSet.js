@@ -7,6 +7,11 @@ define([
         this.gl = options.gl;
         for ( var name in buffers ) {
             if ( buffers.hasOwnProperty( name ) ) {
+                if ( name == 'colors' ) {
+                    this[ name ] = buffers[ name ];
+                    continue;
+                }
+                
                 this[ name ] = new Buffer({
                     gl: this.gl,
                     name: name,
@@ -30,7 +35,13 @@ define([
         }.bind( this );
         assignBuffer( this.textureCoords, program.textureLocation );
         assignBuffer( this.positions, program.positionLocation );
-        assignBuffer( this.colors, program.colorLocation );
+        //assignBuffer( this.colors, program.colorLocation );
+        this.gl.uniform4f( program.colorLocation, 
+            this.colors[0], 
+            this.colors[1], 
+            this.colors[2], 
+            this.colors[3] 
+        );
     };
 
     return BufferSet;

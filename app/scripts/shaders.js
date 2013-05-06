@@ -8,7 +8,7 @@ define([
             source: [
                 'precision mediump float;',
                 '',
-                'varying vec4 vVertexColor;',
+                'uniform vec4 uVertexColor;',
                 '',
                 'uniform bool uUseTextures;',
                 'varying vec2 vTextureCoord;',
@@ -16,7 +16,7 @@ define([
                 'uniform sampler2D uSampler;',
                 '',
                 'void main(void) {',
-                '  vec4 vertexColor = vVertexColor;',
+                '  vec4 vertexColor = uVertexColor;',
                 '  if(uUseTextures) {',
                 '    vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));',
                 '    vertexColor = textureColor;',
@@ -31,7 +31,6 @@ define([
             source: [
                 'attribute vec3 aVertexPosition;',
                 'attribute vec2 aTextureCoord;',
-                'attribute vec4 aVertexColor;',
                 '',
                 'uniform mat4 uMVMatrix;',
                 'uniform mat4 uPMatrix;',
@@ -42,7 +41,6 @@ define([
                 'void main(void) {',
                 '  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);',
                 '  vTextureCoord = aTextureCoord;',
-                '  vVertexColor = aVertexColor;',
                 '}'
             ].join( '\n' )
         }
