@@ -160,6 +160,10 @@ define(function( require ) {
 
 
     Interact.prototype.addViewHandler = function() {
+        if( this.paper.world.framebuffers.length <= 0 ) {
+            alert( 'You cannot create any more views :(' );
+            return;
+        }
         this.$addView.addClass( 'btn-primary' );
         this.$editView.removeClass( 'btn-success' );
         this.$deleteView.removeClass( 'btn-danger' );
