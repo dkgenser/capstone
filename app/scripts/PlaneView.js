@@ -86,10 +86,11 @@ define(function( require ) {
 
     PlaneView.prototype.cloneView = function( view ) {
         return {
-            eye:     glMatrix.vec3.clone( view.eye ),
-            center:  glMatrix.vec3.clone( view.center ),
-            up:      glMatrix.vec3.clone( view.up ),
-            pMatrix: view.pMatrix,
+            eye:      glMatrix.vec3.clone( view.eye ),
+            center:   glMatrix.vec3.clone( view.center ),
+            up:       glMatrix.vec3.clone( view.up ),
+            pMatrix:  view.pMatrix,
+            mvMatrix: glMatrix.mat4.create(),
         };
     };
 

@@ -117,6 +117,7 @@ define(function( require ) {
 
     World.prototype._constructPMatrix = function() {
         var matrix = glMatrix.mat4.create();
+        glMatrix.mat4.identity( matrix );
 
         glMatrix.mat4.ortho(
             matrix,

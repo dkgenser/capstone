@@ -2,7 +2,8 @@ define(function( require ) {
     'use strict';
 
 
-    var $ = require( 'jquery' );
+    var $         = require( 'jquery' ),
+        glMatrix  = require( 'glMatrix' );
 
 
     var Interact = function( options ) {
@@ -100,21 +101,17 @@ define(function( require ) {
     Interact.prototype._worldToPlaneCoords = function( options ) {
         var plane       = options.plane;
         var worldCoords = options.coords;
+        var matrix      = glMatrix.mat4.create();
+        glMatrix.mat4.mul( matrix, plane.view.pMatrix, plane.view.mvMatrix );
         
         // adapted from Jeshua Bratman
-        /* unproject - convert screen coordinate to WebGL Coordinates 
-         *   winx, winy - point on the screen 
-         *   winz       - winz=0 corresponds to newPoint and winzFar corresponds to farPoint 
-         *   mat        - model-view-projection matrix 
-         *   viewport   - array describing the canvas [xTL,yTL,width,height] 
-         */
         var coords = [0, 0, 0, 1];
-        coords[0] = 2 * (worldCoords[0] - viewport[0])/viewport[2] - 1; 
-        coords[1] = 2 * (worldCoords[1] - viewport[1])/viewport[3] - 1; 
+        coords[0] = 2 * (worldCoords[0] - plane.center[0])/plane.width; 
+        coords[1] = 2 * (worldCoords[1] - plane.center[1])/plane.width; 
         coords[2] = 2 * worldCoords[2] - 1;
 
         var invMat = glMatrix.mat4.create(); 
-        glMatrix.mat4.invert( invMat, mat );
+        glMatrix.mat4.invert( invMat, matrix );
 
         glMatrix.vec4.transformMat4( coords, coords, invMat ); 
         return [ coords[0]/coords[3], coords[1]/coords[3], coords[2]/coords[3] ]; 
@@ -128,7 +125,10 @@ define(function( require ) {
 
         this.planeSelectHandler( function( plane ) {
             var objects = this.paper.world.modelWorld.intersect({ 
-                eye: plane.view.eye,
+                eye: this._worldToPlaneCoords({ 
+                    plane: plane,
+                    coords: [this.pixelCoords.x, this.pixelCoords.y, 0],
+                }),
                 direction: plane.getLineOfSight( plane.view ),
                 min: .0001,
                 max: 2 * this.paper.world.boundingSphereRadius,
@@ -241,8 +241,10 @@ define(function( require ) {
                     selectedPlane = plane;
                 }
             });
+
             if ( selectedPlane !== undefined ) {
                 this.setDefault();
+                this.pixelCoords = coords;
                 callback( selectedPlane );
             }
             this.mouseClicked = false;
