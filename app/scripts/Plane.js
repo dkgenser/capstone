@@ -95,6 +95,14 @@ define(function( require ) {
         //LINE_LOOP
         this.wireBuffer.assignVertexAttributes( this.world.program );
         this.world.setMatrixUniforms();
+        if ( this.selected ) {
+            this.gl.uniform4f( this.world.program.colorLocation, 
+                WIRE_SELECT_COLOR[0], 
+                WIRE_SELECT_COLOR[1], 
+                WIRE_SELECT_COLOR[2], 
+                WIRE_SELECT_COLOR[3] 
+            );
+        }
         this.gl.drawArrays(
             this.gl.LINE_LOOP,
             0,
@@ -154,14 +162,14 @@ define(function( require ) {
 
             if( tempt < min || tempt > max )
             {
-                alert(tempt);
+                alert( "Time: " + tempt);
                 return false;
             }
 
             if( t !== null ) { t = tempt; }
 
             var beta = (w[0]*eihf + w[1]*gfdi + w[2]*dheg) / M;
-            alert ( beta );
+            //alert ( beta );
 
             if( beta<0 || beta>1 ) 
             {
@@ -169,7 +177,7 @@ define(function( require ) {
             }
 
             var gamma = (d[2]*akjb + d[1]*jcal + d[0]*blkc) / M;
-            alert( gamma );
+            //alert( gamma );
             if( gamma<0 || gamma > 1 - beta ) 
             {
                 return false;
