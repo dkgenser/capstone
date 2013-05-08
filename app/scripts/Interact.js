@@ -53,6 +53,7 @@ define(function( require ) {
         this.$canvas.unbind( 'mousedown' );
         this.$canvas.unbind( 'mouseup' );
         this.$canvas.unbind( 'mousemove' );
+        this.defaultHandler();
         this.mouseClicked = false;
     };
 
@@ -116,6 +117,39 @@ define(function( require ) {
 
         glMatrix.vec4.transformMat4( coords, coords, invMat ); 
         return [ coords[0]/coords[3], coords[1]/coords[3], coords[2]/coords[3] ]; 
+    };
+
+
+    Interact.prototype.defaultHandler = function() {
+        this.mouseClicked = false;
+
+        this.$canvas.mousedown(function( e ) {
+            this.lastMouseX = e.clientX;
+            this.lastMouseY = e.clientY;
+            this.mouseClicked = true;
+        }.bind( this ));
+
+        this.$canvas.mousemove( function( e ) {
+            if ( this.mouseClicked === false ) {
+                return;
+            }
+
+            var newX = e.clientX;
+            var newY = e.clientY;
+            
+            var deltaX = newX - this.lastMouseX;
+            var deltaY = this.lastMouseY - newY;
+
+            glMatrix.mat4.translate(this.paper.world.moveMatrix, 
+                this.paper.world.moveMatrix, [ deltaX, deltaY, 0]);
+
+            this.lastMouseX = newX;
+            this.lastMouseY = newY;
+        }.bind( this ));
+
+        this.$canvas.mouseup(function() {
+            this.mouseClicked = false;
+        }.bind( this ));
     };
 
 

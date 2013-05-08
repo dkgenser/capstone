@@ -37,8 +37,10 @@ define(function( require ) {
         this.gl.enable( this.gl.DEPTH_TEST );
         this.gl.depthFunc( this.gl.LEQUAL );
 
-        this.mvMatrix = glMatrix.mat4.create();
-        this.pMatrix = glMatrix.mat4.create();
+        this.mvMatrix   = glMatrix.mat4.create();
+        this.pMatrix    = glMatrix.mat4.create();
+        this.moveMatrix = glMatrix.mat4.create();
+        glMatrix.mat4.identity(this.moveMatrix);
         this.mvMatrixStack = [];
 
         this.camMVMatrix = this._constructMVMatrix();
@@ -223,6 +225,7 @@ define(function( require ) {
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT );
         glMatrix.mat4.copy( this.pMatrix, this.camPMatrix );
         glMatrix.mat4.copy( this.mvMatrix, this.camMVMatrix );
+        glMatrix.mat4.multiply(this.mvMatrix, this.mvMatrix, this.moveMatrix);
         this.setMatrixUniforms();
     };
 
