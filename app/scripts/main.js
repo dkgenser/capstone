@@ -17,7 +17,7 @@ require( [ 'World' ], function( World ) {
 
     var world = new World({
         selectors: {
-            container: '#canvasDiv',
+            canvas: '#app-canvas',
             addView: '#add-view',
             deleteView: '#delete-view',
             editView: '#edit-view',

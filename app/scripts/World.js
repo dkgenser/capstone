@@ -49,11 +49,14 @@ define(function( require ) {
 
 
     World.prototype._constructCanvas = function() {
-        var container = document.querySelector( this.selectors.container );
-        var canvas = document.createElement( 'canvas' );
-        canvas.width = container.clientWidth;
-        canvas.height = $( window ).height() - 200;
-        container.appendChild( canvas );
+        var canvas = document.querySelector( this.selectors.canvas );
+        var $window = $( window );
+        var sizeCanvasToWindow = function() {
+            canvas.width = $window.width();
+            canvas.height = $window.height();
+        };
+        sizeCanvasToWindow();
+        window.onresize = sizeCanvasToWindow;
         return canvas;
     };
 
