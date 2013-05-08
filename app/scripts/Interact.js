@@ -58,6 +58,14 @@ define(function( require ) {
     };
 
 
+    Interact.prototype.clearHandlers = function() {
+        this.$canvas.unbind( 'mousedown' );
+        this.$canvas.unbind( 'mouseup' );
+        this.$canvas.unbind( 'mousemove' );
+        this.mouseClicked = false;
+    };
+
+
     Interact.prototype._getMouseOffset = function() {
         var element = this.canvas,
             offset = { x: 0, y: 0 };
@@ -237,7 +245,7 @@ define(function( require ) {
 
 
     Interact.prototype.foldingLineHandler = function( callback ) {
-        this.setDefault();
+        this.clearHandlers();
         this.mouseClicked = true;
 
         this.$canvas.mousedown(function() {
@@ -263,7 +271,7 @@ define(function( require ) {
 
 
     Interact.prototype.planeSelectHandler = function( callback ) {
-        this.setDefault();
+        this.clearHandlers();
 
         this.$canvas.mousedown(function() {
             this.mouseClicked = true;
