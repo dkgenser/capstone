@@ -14,6 +14,7 @@ define(function( require ) {
         // Cache jQuery objects.
         this.$canvas = $( this.canvas );
         this.$document = $( document );
+        this.$container = $( options.selectors.container );
         this.$addView = $( options.selectors.addView );
         this.$deleteView = $( options.selectors.deleteView );
         this.$editView = $( options.selectors.editView );
@@ -119,9 +120,12 @@ define(function( require ) {
 
 
     Interact.prototype.selectHandler = function() {
+        this.$select.addClass( 'btn-warning' );
         this.paper.world.modelWorld.objects.forEach( function ( obj ) {
             obj.selected = false;
         });
+
+        //this.$container.style.cursor = "crosshair";
 
         this.planeSelectHandler( function( plane ) {
             var objects = this.paper.world.modelWorld.intersect({ 
@@ -137,14 +141,15 @@ define(function( require ) {
             objects.forEach( function ( obj ) {
                 obj.selected = true;
             });
+
+            this.$select.removeClass( 'btn-warning' );
         }.bind( this ));
     };
 
 
     Interact.prototype.deleteViewHandler = function() {
         this.$deleteView.addClass( 'btn-danger' );
-        this.$addView.removeClass( 'btn-primary' );
-        this.$editView.removeClass( 'btn-success' );
+
         this.planeSelectHandler(function( plane ) {
             if ( this.paper.planes.indexOf( plane ) <= 1 ){
                 alert( 'This plane cannot be deleted.' );
@@ -165,8 +170,6 @@ define(function( require ) {
             return;
         }
         this.$addView.addClass( 'btn-primary' );
-        this.$editView.removeClass( 'btn-success' );
-        this.$deleteView.removeClass( 'btn-danger' );
         this.planeSelectHandler( function( plane ) {
             this.fl = this.paper.addFoldingLine({
                 parent: plane,
@@ -177,16 +180,14 @@ define(function( require ) {
             plane.selected = true;
             this.foldingLineHandler( function() {
                 plane.selected = false;
-            }.bind( this ) );
-            this.$addView.removeClass( 'btn-primary' );
+                this.$addView.removeClass( 'btn-primary' );
+            }.bind( this ) );  
         }.bind( this ));
     };
 
 
     Interact.prototype.editViewHandler = function() {
         this.$editView.addClass( 'btn-success' );
-        this.$addView.removeClass( 'btn-primary' );
-        this.$deleteView.removeClass( 'btn-danger' );
         this.planeSelectHandler( function( plane ) {
             if ( this.paper.planes.indexOf( plane ) <= 1 || plane.children.length > 0 ) {
                 alert( 'You cannot edit this view.' );
