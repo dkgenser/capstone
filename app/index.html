@@ -20,12 +20,14 @@
             <div class="page-header">
                 <h1>Descriptive Geometry Study Application</h1>
             </div>
-            <button class="btn" onClick="window.location.reload()"> Start Over </button>
-            <button class="btn" id="add-view">Add View</button>
-            <button class="btn" id="delete-view">Delete View</button>
-            <button class="btn" id="edit-view">Reposition View</button>
-            <button class="btn" id="select">Select Object</button>
-            <div id="canvasDiv" style="border-style:solid;" ></div>
+            <div class="button-container" >
+                <button class="btn" id="add-view">Add View</button>
+                <button class="btn" id="delete-view">Delete View</button>
+                <button class="btn" id="edit-view">Reposition View</button>
+                <button class="btn" id="select">Select Object</button>
+                <button class="btn" style="float: right" onClick="window.location.reload()"> Start Over </button>
+            </div>
+            <div id="canvasDiv" style="border-style:solid; margin: 5px;" ></div>
         </div>
 
         <!--[if lt IE 7]>
